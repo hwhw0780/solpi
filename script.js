@@ -1,12 +1,15 @@
 // Mining Constants and Variables
 const MINING_RATE = 10;
 let totalMined = 0;
+let currentCaptchaCode = '';
 
 // DOM Elements
 const boostButton = document.getElementById('boostButton');
 const captchaModal = document.getElementById('captchaModal');
 const miningPowerElement = document.getElementById('mining-power');
 const countdownElement = document.getElementById('countdown');
+const captchaChallenge = document.getElementById('captchaChallenge');
+const captchaInput = document.getElementById('captchaInput');
 
 // Boost State
 let boostEndTime = localStorage.getItem('boostEndTime');
@@ -39,6 +42,88 @@ const createParticle = () => {
         particle.remove();
     }, 1500);
 };
+
+// Captcha Functions
+function generateCaptchaCode() {
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+        code += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return code;
+}
+
+function displayCaptcha() {
+    currentCaptchaCode = generateCaptchaCode();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 200;
+    canvas.height = 60;
+
+    // Background
+    ctx.fillStyle = '#1a1a1a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Add noise (dots)
+    for (let i = 0; i < 100; i++) {
+        ctx.fillStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`;
+        ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+    }
+
+    // Add lines
+    for (let i = 0; i < 4; i++) {
+        ctx.strokeStyle = `rgba(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255}, 0.5)`;
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+        ctx.stroke();
+    }
+
+    // Add text
+    ctx.font = 'bold 36px Arial';
+    ctx.fillStyle = '#00FFA3';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Add each character with slight rotation
+    for (let i = 0; i < currentCaptchaCode.length; i++) {
+        const x = (canvas.width / 6) * (i + 0.5);
+        const y = canvas.height / 2;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate((Math.random() - 0.5) * 0.4);
+        ctx.fillText(currentCaptchaCode[i], 0, 0);
+        ctx.restore();
+    }
+
+    // Clear previous content and add new canvas
+    captchaChallenge.innerHTML = '';
+    captchaChallenge.appendChild(canvas);
+}
+
+function refreshCaptcha() {
+    displayCaptcha();
+    captchaInput.value = '';
+}
+
+function verifyCaptcha() {
+    const userInput = captchaInput.value.toUpperCase();
+    if (userInput === currentCaptchaCode) {
+        closeCaptchaModal();
+        const endTime = new Date().getTime() + (2 * 60 * 60 * 1000); // 2 hours
+        activateBoost(endTime);
+        localStorage.setItem('boostEndTime', endTime.toString());
+    } else {
+        alert('Incorrect code. Please try again.');
+        refreshCaptcha();
+        captchaInput.value = '';
+    }
+}
+
+function closeCaptchaModal() {
+    captchaModal.style.display = 'none';
+    captchaInput.value = '';
+}
 
 // Boost Functions
 function checkExistingBoost() {
@@ -101,27 +186,6 @@ function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
 
-function closeCaptchaModal() {
-    captchaModal.style.display = 'none';
-    grecaptcha.reset();
-}
-
-async function onCaptchaSuccess(token) {
-    try {
-        // In a production environment, you would verify the token with your server
-        // using the secret key: 6LcgFekqAAAAAC8yYr5VDdoy0SSHEIHTABo7rKJ5
-        // For now, we'll proceed with the boost
-        closeCaptchaModal();
-        const endTime = new Date().getTime() + (2 * 60 * 60 * 1000); // 2 hours
-        activateBoost(endTime);
-        localStorage.setItem('boostEndTime', endTime.toString());
-    } catch (error) {
-        console.error('Error verifying captcha:', error);
-        alert('Failed to verify captcha. Please try again.');
-        grecaptcha.reset();
-    }
-}
-
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize mining update interval
@@ -137,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     boostButton.addEventListener('click', () => {
         if (!boostActive) {
             captchaModal.style.display = 'flex';
+            displayCaptcha();
         }
     });
 

@@ -293,15 +293,20 @@
     <div class="captcha-modal" id="captchaModal">
         <div class="captcha-content">
             <h3>Solve Captcha to Boost Mining Power</h3>
-            <div class="g-recaptcha" 
-                data-sitekey="6LcgFekqAAAAAM8npWgBpK21Kh_cXrIwe_ZFHuNV"
-                data-callback="onCaptchaSuccess">
+            <div class="custom-captcha">
+                <div class="captcha-challenge" id="captchaChallenge"></div>
+                <input type="text" id="captchaInput" placeholder="Enter the code above" maxlength="6">
+                <div class="captcha-buttons">
+                    <button class="refresh-captcha" onclick="refreshCaptcha()">
+                        <span class="button-icon">🔄</span>
+                    </button>
+                    <button class="verify-captcha" onclick="verifyCaptcha()">Verify</button>
+                    <button class="close-captcha" onclick="closeCaptchaModal()">Cancel</button>
+                </div>
             </div>
-            <button class="close-captcha" onclick="closeCaptchaModal()">Cancel</button>
         </div>
     </div>
 
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="script.js"></script>
 </body>
 </html> 
