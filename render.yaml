@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: solpi
+    env: static
+    buildCommand: echo "No build required"
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: true
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache 
