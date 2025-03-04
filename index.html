@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPI Coin Mining</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="username">@UserName</div>
+            <div class="logo-container">
+                <img src="images/logo.png" alt="SOLPI Logo" class="main-logo">
+            </div>
+            <div class="header-buttons">
+                <button class="connect-wallet">Connect Wallet</button>
+            </div>
+        </header>
+
+        <div class="about-section">
+            <h1>SOLPI (SPI) – The Future of Community-Powered Crypto Mining</h1>
+            
+            <div class="about-cards">
+                <div class="about-card">
+                    <h3>What is SOLPI (SPI)?</h3>
+                    <p>SOLPI is a next-generation community-driven cryptocurrency built on Solana, designed for fast, fair, and eco-friendly mining. Unlike traditional mining, SOLPI lets users earn SPI directly from Telegram—no expensive hardware or high energy costs required.</p>
+                </div>
+
+                <div class="mining-container">
+                    <div class="mining-rate">
+                        <span id="mining-rate">10.00</span>
+                        <div class="coin-label">
+                            <img src="images/coin.png" alt="SPI Coin" class="coin-icon">
+                            <span>SPI/min</span>
+                        </div>
+                    </div>
+
+                    <div class="mining-circle">
+                        <div class="mining-animation"></div>
+                        <div class="mining-particles"></div>
+                        <div class="mining-pulse"></div>
+                        <div class="mining-status">Mining</div>
+                    </div>
+
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div>Total Mined</div>
+                            <div class="stat-value" id="total-mined">0.00 SPI</div>
+                        </div>
+                        <div class="stat-card">
+                            <div>Mining Power</div>
+                            <div class="stat-value" id="mining-power">1x</div>
+                            <button class="boost-button" id="boostButton">
+                                <span class="button-icon">⚡</span>
+                                Solve to Boost
+                            </button>
+                            <div id="countdown" class="countdown"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🌿</div>
+                        <h4>Eco-Friendly</h4>
+                        <p>No high-power mining rigs, just a simple Telegram app.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h4>Instant Transactions</h4>
+                        <p>Built on Solana, ensuring lightning-fast transfers.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤝</div>
+                        <h4>Community-Driven</h4>
+                        <p>Help AI while earning, making the world smarter.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🚀</div>
+                        <h4>Easy to Start</h4>
+                        <p>No technical knowledge needed—just join, mine, and earn!</p>
+                    </div>
+                </div>
+
+                <div class="earning-methods">
+                    <h3>How to Earn SPI?</h3>
+                    <div class="method-cards">
+                        <div class="method-card">
+                            <div class="method-icon">⏳</div>
+                            <h4>Time-Based Mining</h4>
+                            <ul>
+                                <li>Earn 1 SPI per minute just by keeping the Telegram app open</li>
+                                <li>The longer you stay active, the more you mine</li>
+                            </ul>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">🤖</div>
+                            <h4>Task-Based Boosts</h4>
+                            <ul>
+                                <li>Solve Captchas to train AI systems worldwide</li>
+                                <li>Contribute to a better, more secure internet</li>
+                                <li>Earn extra SPI as rewards</li>
+                            </ul>
+                            <button class="method-button solve-captcha" onclick="alert('Redirecting to Captcha solving interface...')">
+                                <span class="button-icon">🤖</span>
+                                Solve Captchas
+                            </button>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">🌍</div>
+                            <h4>Referral Rewards</h4>
+                            <ul>
+                                <li>Invite friends and earn a percentage of their mining rate</li>
+                                <li>Build a network and grow your earning potential</li>
+                            </ul>
+                            <button class="method-button referral-button" disabled>
+                                <span class="button-icon">🔒</span>
+                                Coming Soon
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="team-section">
+            <h2>Meet Our Team</h2>
+            <div class="team-grid">
+                <div class="team-card founder">
+                    <div class="team-avatar">
+                        <span class="avatar-emoji">👨‍💼</span>
+                    </div>
+                    <h3>Alex Thompson</h3>
+                    <div class="role">Founder & CEO</div>
+                    <p>Serial entrepreneur with 8+ years in blockchain and Web3. Previously founded two successful DeFi platforms. Passionate about creating decentralized solutions that empower communities. Expert in tokenomics and crypto economics.</p>
+                    <div class="expertise">
+                        <span>Blockchain</span>
+                        <span>DeFi</span>
+                        <span>Web3</span>
+                    </div>
+                </div>
+
+                <div class="team-card design">
+                    <div class="team-avatar">
+                        <span class="avatar-emoji">👨‍🎨</span>
+                    </div>
+                    <h3>Sarah Chen</h3>
+                    <div class="role">UI/UX Design Lead</div>
+                    <p>Award-winning designer with expertise in creating intuitive and engaging crypto interfaces. Previously designed for major crypto exchanges. Specializes in user-centric design and seamless Web3 experiences.</p>
+                    <div class="expertise">
+                        <span>UI/UX</span>
+                        <span>Web Design</span>
+                        <span>Motion</span>
+                    </div>
+                </div>
+
+                <div class="team-card mining">
+                    <div class="team-avatar">
+                        <span class="avatar-emoji">👨‍💻</span>
+                    </div>
+                    <h3>Michael Rodriguez</h3>
+                    <div class="role">Mining Operations Lead</div>
+                    <p>Blockchain architect with 10+ years in crypto mining operations. Pioneered innovative mining solutions for major cryptocurrencies. Expert in building scalable and efficient mining infrastructures.</p>
+                    <div class="expertise">
+                        <span>Mining</span>
+                        <span>Blockchain</span>
+                        <span>Security</span>
+                    </div>
+                </div>
+
+                <div class="team-card marketing">
+                    <div class="team-avatar">
+                        <span class="avatar-emoji">👩‍💼</span>
+                    </div>
+                    <h3>Emily Parker</h3>
+                    <div class="role">Marketing Director</div>
+                    <p>Growth strategist with deep experience in crypto marketing. Led successful IDO campaigns and community building initiatives. Expertise in Web3 marketing, community engagement, and strategic partnerships.</p>
+                    <div class="expertise">
+                        <span>Marketing</span>
+                        <span>Growth</span>
+                        <span>Community</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-buttons">
+                <button class="info-button" onclick="openModal('roadmap')">
+                    <span class="button-icon">📋</span>
+                    Roadmap
+                </button>
+                <button class="info-button" onclick="openModal('tokenomics')">
+                    <span class="button-icon">📊</span>
+                    Tokenomics
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roadmap Modal -->
+    <div id="roadmap" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('roadmap')">&times;</span>
+            <h2>Roadmap</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h3>Q2 2025: Project Initiation</h3>
+                    <ul>
+                        <li><strong>Conceptualization & Planning:</strong> Define the vision, mission, and objectives of SOLPI. Develop a detailed project plan outlining timelines, resources, and key deliverables.</li>
+                        <li><strong>Team Formation:</strong> Assemble a skilled team comprising blockchain developers, UI/UX designers, marketing strategists, and community managers.</li>
+                        <li><strong>Whitepaper Development:</strong> Draft a comprehensive whitepaper detailing the technical architecture, tokenomics, use cases, and the unique value proposition of SOLPI.</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h3>Q3 2025: Development Phase</h3>
+                    <ul>
+                        <li><strong>Telegram Integration:</strong> Develop and integrate the SOLPI mining bot within Telegram, enabling users to mine SPI by keeping the app active and solving Captchas.</li>
+                        <li><strong>Smart Contract Deployment:</strong> Deploy secure and efficient smart contracts on the Solana blockchain to manage token issuance, transactions, and reward distributions.</li>
+                        <li><strong>User Interface Design:</strong> Create an intuitive and user-friendly interface for the Telegram bot, ensuring seamless interaction and engagement.</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h3>Q4 2025: Pre-Launch and Community Building</h3>
+                    <ul>
+                        <li><strong>Pump.fun Pre-Launch:</strong> Initiate the token distribution through a bonding curve model on Pump.fun, allowing early adopters to acquire SPI tokens.</li>
+                        <li><strong>Community Engagement:</strong> Launch social media channels, forums, and community events to build a robust and engaged user base.</li>
+                        <li><strong>Educational Campaigns:</strong> Conduct webinars, tutorials, and AMAs to educate the community about SOLPI's features, benefits, and mining mechanisms.</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h3>Q1 2026: Official Launch</h3>
+                    <ul>
+                        <li><strong>Mainnet Launch:</strong> Transition from testnet to mainnet, enabling full functionality of SOLPI's features on the Solana blockchain.</li>
+                        <li><strong>Marketing Campaign:</strong> Implement targeted marketing strategies to increase brand awareness and attract a broader audience.</li>
+                        <li><strong>Partnerships:</strong> Establish collaborations with AI and blockchain projects to enhance the utility and reach of SOLPI.</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h3>Q2 2026: Expansion and Enhancement</h3>
+                    <ul>
+                        <li><strong>Feature Upgrades:</strong> Introduce additional functionalities based on user feedback, such as staking, governance mechanisms, or NFT integrations.</li>
+                        <li><strong>Global Outreach:</strong> Expand marketing efforts to international markets, focusing on regions with high cryptocurrency adoption.</li>
+                        <li><strong>Continuous Improvement:</strong> Regularly update the platform to improve security, scalability, and user experience.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tokenomics Modal -->
+    <div id="tokenomics" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('tokenomics')">&times;</span>
+            <h2>Tokenomics Distribution</h2>
+            <div class="tokenomics-container">
+                <div class="tokenomics-chart-container">
+                    <div class="tokenomics-chart">
+                        <div class="chart-segment community"></div>
+                        <div class="chart-segment dev"></div>
+                        <div class="chart-segment marketing"></div>
+                        <div class="chart-segment kol"></div>
+                        <div class="chart-segment dex"></div>
+                    </div>
+                </div>
+                <div class="tokenomics-legend">
+                    <div class="legend-item">
+                        <span class="legend-color community"></span>
+                        <span class="legend-text">70% - Community Rewards (Mining)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color dev"></span>
+                        <span class="legend-text">5% - Development</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color marketing"></span>
+                        <span class="legend-text">5% - Marketing</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color kol"></span>
+                        <span class="legend-text">10% - Key Opinion Leaders (KOL)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color dex"></span>
+                        <span class="legend-text">10% - DEX Liquidity</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="captcha-modal" id="captchaModal">
+        <div class="captcha-content">
+            <h3>Solve Captcha to Boost Mining Power</h3>
+            <div class="g-recaptcha" 
+                data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                data-callback="onCaptchaSuccess">
+            </div>
+            <button class="close-captcha" onclick="closeCaptchaModal()">Cancel</button>
+        </div>
+    </div>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="script.js"></script>
+</body>
+</html> 
