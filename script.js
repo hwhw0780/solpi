@@ -24,20 +24,28 @@ const updateTotalMined = () => {
     document.getElementById('total-mined').textContent = totalMined.toFixed(2) + ' SPI';
 };
 
-// Particle Animation
-const createParticle = () => {
-    const particles = document.getElementById('particles');
+// Enhanced Particle Animation
+const createParticle = (e = null) => {
+    const particles = document.querySelector('.mining-particles');
     const particle = document.createElement('div');
     particle.className = 'particle';
     
-    // Random position within the circle
-    const angle = Math.random() * Math.PI * 2;
-    const radius = Math.random() * 80;
-    const x = 100 + radius * Math.cos(angle);
-    const y = 100 + radius * Math.sin(angle);
-    
-    particle.style.left = x + '%';
-    particle.style.top = y + '%';
+    // If triggered by click, create particles at click position
+    if (e) {
+        const rect = particles.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        particle.style.left = x + '%';
+        particle.style.top = y + '%';
+    } else {
+        // Random position within the circle
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 80;
+        const x = 100 + radius * Math.cos(angle);
+        const y = 100 + radius * Math.sin(angle);
+        particle.style.left = x + '%';
+        particle.style.top = y + '%';
+    }
     
     particles.appendChild(particle);
     
@@ -205,7 +213,22 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateTotalMined, 60000);
 
     // Initialize particle creation interval
-    setInterval(createParticle, 200);
+    setInterval(() => createParticle(), 200);
+
+    // Add click interaction to mining circle
+    const miningCircle = document.querySelector('.mining-circle');
+    miningCircle.addEventListener('click', (e) => {
+        // Create burst of particles
+        for (let i = 0; i < 8; i++) {
+            setTimeout(() => createParticle(e), i * 50);
+        }
+        
+        // Add temporary pulse effect
+        miningCircle.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            miningCircle.style.transform = '';
+        }, 150);
+    });
 
     // Initialize boost status
     checkExistingBoost();
