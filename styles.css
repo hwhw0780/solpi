@@ -44,15 +44,17 @@ body {
 }
 
 .logo-container {
-    position: relative;
-    padding: 15px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
     background: var(--black-transparent);
     border-radius: 12px;
     box-shadow: 0 8px 24px var(--surge-green-glow);
 }
 
 .main-logo {
-    height: 60px;
+    height: 50px;
     width: auto;
     object-fit: contain;
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
@@ -73,28 +75,7 @@ body {
     text-shadow: 0 0 10px var(--surge-green-glow);
 }
 
-.connect-wallet {
-    background: linear-gradient(135deg, rgba(3, 225, 255, 0.1) 0%, rgba(0, 255, 163, 0.1) 100%);
-    color: #fff;
-    border: 1px solid var(--surge-green);
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-}
-
-.connect-wallet:hover {
-    background: linear-gradient(135deg, rgba(3, 225, 255, 0.2) 0%, rgba(0, 255, 163, 0.2) 100%);
-    transform: translateY(-2px) rotate(15deg);
-    box-shadow: 0 4px 12px var(--ocean-blue-glow);
-}
-
-.info-button {
+.connect-wallet, .info-button {
     background: linear-gradient(135deg, rgba(3, 225, 255, 0.1) 0%, rgba(0, 255, 163, 0.1) 100%);
     color: #fff;
     border: 1px solid var(--surge-green);
@@ -168,152 +149,15 @@ body {
     box-shadow: 0 0 40px var(--ocean-blue-glow),
                 inset 0 0 20px var(--purple-glow);
     border: 2px solid var(--ocean-blue);
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.world-map {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: url("data:image/svg+xml,%3Csvg width='240' height='240' viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 120 C60 60 180 60 200 120 C180 180 60 180 40 120' stroke='rgba(0, 255, 163, 0.2)' fill='none'/%3E%3C/svg%3E");
-    background-size: cover;
-    background-position: center;
-    opacity: 0.3;
-}
-
-.country-node {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: var(--surge-green);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 8px var(--surge-green-glow);
-    z-index: 2;
-}
-
-.country-pulse {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    background: transparent;
-    border: 2px solid var(--surge-green);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    animation: country-pulse 2s ease-out;
-    z-index: 2;
-}
-
-.country-connection {
-    position: absolute;
-    height: 2px;
-    background: linear-gradient(90deg, var(--surge-green), transparent);
-    transform-origin: left center;
-    animation: connection-flow 2s ease-out;
-    z-index: 1;
-}
-
-.activity-indicator {
-    position: absolute;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    color: var(--surge-green);
-    transform: translate(-50%, -100%);
-    white-space: nowrap;
-    z-index: 3;
-    border: 1px solid var(--surge-green);
-    box-shadow: 0 0 10px var(--surge-green-glow);
-    backdrop-filter: blur(4px);
-    animation: fade-up 3s ease-out forwards;
-}
-
-.country-name {
-    font-weight: bold;
-    margin-right: 6px;
-}
-
-.activity-message {
-    opacity: 0.8;
-}
-
-@keyframes country-pulse {
-    0% {
-        transform: translate(-50%, -50%) scale(0.5);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(2);
-        opacity: 0;
-    }
-}
-
-@keyframes connection-flow {
-    0% {
-        transform: scaleX(0) rotate(var(--angle));
-        opacity: 1;
-    }
-    50% {
-        transform: scaleX(1) rotate(var(--angle));
-        opacity: 0.5;
-    }
-    100% {
-        transform: scaleX(0) rotate(var(--angle));
-        opacity: 0;
-    }
-}
-
-@keyframes fade-up {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, -80%);
-    }
-    20% {
-        opacity: 1;
-        transform: translate(-50%, -100%);
-    }
-    80% {
-        opacity: 1;
-        transform: translate(-50%, -100%);
-    }
-    100% {
-        opacity: 0;
-        transform: translate(-50%, -120%);
-    }
-}
-
-.mining-status {
-    position: relative;
-    z-index: 2;
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--surge-green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--surge-green);
-    box-shadow: 0 0 20px var(--surge-green-glow);
-    backdrop-filter: blur(4px);
 }
 
 .mining-animation {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle at center, transparent 30%, var(--surge-green-glow));
+    background: linear-gradient(45deg, var(--surge-green-glow), var(--ocean-blue-glow));
+    animation: rotate 3s linear infinite;
     opacity: 0.4;
-    animation: pulse-glow 3s ease-in-out infinite;
-}
-
-.mining-circle:hover .mining-animation {
-    opacity: 0.6;
-    animation: pulse-glow 2s ease-in-out infinite;
 }
 
 .mining-particles {
@@ -324,55 +168,50 @@ body {
 
 .particle {
     position: absolute;
-    width: 2px;
-    height: 2px;
     background: var(--surge-green);
+    width: 4px;
+    height: 4px;
     border-radius: 50%;
-    animation: neural-path 2s linear infinite;
-    box-shadow: 0 0 8px var(--surge-green);
+    animation: particle-animation 1.5s linear infinite;
+    box-shadow: 0 0 10px var(--surge-green);
 }
 
-.mining-circle:hover .particle {
-    animation-duration: 1.5s;
-}
-
-@keyframes neural-path {
+@keyframes particle-animation {
     0% {
-        transform: translate(0, 0) scale(1);
+        transform: translate(-50%, -50%) scale(0);
         opacity: 1;
     }
-    50% {
-        transform: translate(var(--x, 100px), var(--y, 100px)) scale(1.5);
-        opacity: 0.7;
-    }
     100% {
-        transform: translate(var(--end-x, 200px), var(--end-y, 200px)) scale(1);
+        transform: translate(-50%, -50%) scale(2);
         opacity: 0;
     }
 }
 
-@keyframes grid-scroll {
-    0% {
-        transform: translateY(-50%) translateX(-50%) rotate(0deg);
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
     }
-    100% {
-        transform: translateY(-50%) translateX(-50%) rotate(360deg);
+    to {
+        transform: rotate(360deg);
     }
 }
 
-@keyframes pulse-glow {
-    0% {
-        transform: scale(0.95);
-        opacity: 0.4;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 0.6;
-    }
-    100% {
-        transform: scale(0.95);
-        opacity: 0.4;
-    }
+.mining-status {
+    position: relative;
+    z-index: 1;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--surge-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: rgba(0, 255, 163, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--surge-green);
+    box-shadow: 0 0 20px var(--surge-green-glow);
+    animation: glow 2s ease-in-out infinite;
 }
 
 .mining-status::after {
@@ -455,11 +294,6 @@ body {
     border-radius: 50%;
     background: var(--surge-green-glow);
     animation: pulse 2s ease-out infinite;
-    pointer-events: none;
-}
-
-.mining-circle:hover .mining-pulse {
-    animation: pulse 1.5s ease-out infinite;
 }
 
 @keyframes pulse {
@@ -589,142 +423,35 @@ body {
     text-shadow: 0 0 5px var(--ocean-blue-glow);
 }
 
-/* Tokenomics Styles */
-.tokenomics-container {
-    display: flex;
-    gap: 40px;
-    padding: 20px;
-    align-items: flex-start;
-}
-
-.tokenomics-chart-container {
-    flex: 1;
-    max-width: 400px;
-    position: relative;
-}
-
-.tokenomics-chart {
-    width: 100%;
-    padding-bottom: 100%;
-    position: relative;
-    border-radius: 50%;
-    background: var(--black);
-    box-shadow: 0 8px 32px var(--ocean-blue-glow);
-    overflow: hidden;
-    border: 1px solid var(--ocean-blue);
-}
-
-.chart-segment {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    transform-origin: 50% 50%;
-    transition: transform 0.3s ease;
-}
-
-.chart-segment:hover {
-    transform: scale(1.02);
-}
-
-.chart-segment.community {
-    background: var(--surge-green);
-    clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 100%, 50% 100%);
-    transform: rotate(0deg);
-}
-
-.chart-segment.dev {
-    background: var(--ocean-blue);
-    clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 20%, 50% 20%);
-    transform: rotate(252deg);
-}
-
-.chart-segment.marketing {
-    background: var(--purple-dino);
-    clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 20%, 50% 20%);
-    transform: rotate(270deg);
-}
-
-.chart-segment.kol {
-    background: var(--surge-green);
-    clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 40%, 50% 40%);
-    transform: rotate(288deg);
-}
-
-.chart-segment.dex {
-    background: var(--ocean-blue);
-    clip-path: polygon(50% 50%, 50% 0, 100% 0, 100% 40%, 50% 40%);
-    transform: rotate(324deg);
-}
-
-.tokenomics-legend {
-    flex: 1;
-    display: grid;
-    gap: 20px;
-    padding: 20px;
-    background: rgba(3, 225, 255, 0.05);
-    border-radius: 16px;
-    border: 1px solid var(--ocean-blue);
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: rgba(3, 225, 255, 0.05);
-    border-radius: 8px;
-    transition: transform 0.3s ease;
-    border: 1px solid var(--ocean-blue);
-}
-
-.legend-item:hover {
-    transform: translateX(5px);
-    background: rgba(3, 225, 255, 0.1);
-    box-shadow: 0 0 20px var(--ocean-blue-glow);
-}
-
-.legend-color {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.legend-text {
+/* Whitepaper Styles */
+.whitepaper-content {
+    line-height: 1.6;
     font-size: 16px;
-    font-weight: 500;
 }
-
-.legend-color.community { background: var(--surge-green); }
-.legend-color.dev { background: var(--ocean-blue); }
-.legend-color.marketing { background: var(--purple-dino); }
-.legend-color.kol { background: var(--surge-green); }
-.legend-color.dex { background: var(--ocean-blue); }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .header {
-        flex-direction: row;
-        gap: 10px;
-        padding: 15px;
+        flex-direction: column;
+        gap: 20px;
+        padding: 15px 0;
         margin-bottom: 20px;
-        justify-content: space-between;
     }
 
     .logo-container {
         position: relative;
         transform: none;
-        order: 0;
-        margin: 0;
+        order: -1;
+        margin-bottom: 20px;
     }
 
     .main-logo {
-        height: 45px;
+        height: 36px;
     }
 
     .header-buttons {
-        flex-wrap: nowrap;
-        justify-content: flex-end;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 10px;
     }
 
@@ -733,15 +460,29 @@ body {
         padding: 6px 12px;
     }
 
-    .connect-wallet {
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
+    .connect-wallet, .info-button {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .mining-rate {
+        flex-direction: column;
+        gap: 8px;
+        font-size: 24px;
+    }
+
+    .mining-circle {
+        width: 180px;
+        height: 180px;
+        margin: 25px auto;
+    }
+
+    .mining-status {
+        font-size: 16px;
+        padding: 6px 12px;
     }
 
     .stats {
-        display: grid;
-        grid-template-columns: 1fr;
         gap: 15px;
         padding: 15px;
         margin-top: 25px;
@@ -749,64 +490,75 @@ body {
 
     .stat-card {
         padding: 15px;
-        font-size: 14px;
     }
 
     .stat-value {
+        font-size: 22px;
+    }
+
+    .modal-content {
+        padding: 20px;
+        width: 95%;
+        max-height: 85vh;
+        border-radius: 16px;
+    }
+
+    .modal-content h2 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    .close {
+        right: 15px;
+        top: 15px;
+        width: 30px;
+        height: 30px;
+        font-size: 24px;
+    }
+
+    .timeline-item {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .timeline-item h3 {
         font-size: 18px;
-        margin-top: 8px;
+        margin-bottom: 15px;
+    }
+
+    .timeline-item li {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+}
+
+/* Additional adjustments for very small screens */
+@media (max-width: 360px) {
+    .container {
+        padding: 10px;
+    }
+
+    .mining-circle {
+        width: 150px;
+        height: 150px;
     }
 
     .mining-rate {
         font-size: 20px;
-        flex-direction: row;
-        gap: 8px;
-        justify-content: center;
-        align-items: center;
     }
 
-    .coin-label {
-        padding: 6px 12px;
-        font-size: 14px;
+    .team-avatar {
+        width: 70px;
+        height: 70px;
     }
 
-    .coin-icon {
-        width: 20px;
-        height: 20px;
+    .avatar-emoji {
+        font-size: 28px;
     }
 
-    .mining-container {
-        padding: 20px;
-        margin: 0 0 30px;
-    }
-}
-
-@media (max-width: 360px) {
-    .header {
-        padding: 10px;
-    }
-
-    .username {
-        font-size: 12px;
-        padding: 4px 8px;
-    }
-
-    .connect-wallet {
-        width: 36px;
-        height: 36px;
-        font-size: 18px;
-    }
-
-    .main-logo {
-        height: 40px;
-    }
-
-    .mining-rate {
-        font-size: 18px;
-    }
-
-    .stat-value {
-        font-size: 16px;
+    .method-button {
+        padding: 8px 12px;
+        font-size: 13px;
     }
 }
 
@@ -1394,141 +1146,4 @@ body {
         padding: 20px;
         margin: 0 20px;
     }
-}
-
-.custom-captcha {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    margin: 20px 0;
-}
-
-.captcha-challenge {
-    background: #1a1a1a;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 4px 12px rgba(0, 255, 163, 0.2);
-    border: 1px solid var(--ocean-blue);
-}
-
-.captcha-challenge canvas {
-    border-radius: 4px;
-}
-
-#captchaInput {
-    width: 200px;
-    padding: 10px;
-    border: 1px solid var(--ocean-blue);
-    border-radius: 8px;
-    background: rgba(3, 225, 255, 0.1);
-    color: #fff;
-    text-align: center;
-    font-size: 18px;
-    letter-spacing: 4px;
-    outline: none;
-    transition: all 0.3s ease;
-}
-
-#captchaInput:focus {
-    border-color: var(--surge-green);
-    box-shadow: 0 0 15px var(--surge-green-glow);
-}
-
-.captcha-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.refresh-captcha {
-    padding: 8px;
-    border-radius: 8px;
-    background: rgba(3, 225, 255, 0.1);
-    border: 1px solid var(--ocean-blue);
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.refresh-captcha:hover {
-    background: rgba(3, 225, 255, 0.2);
-    transform: rotate(180deg);
-}
-
-.verify-captcha {
-    padding: 8px 20px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, rgba(3, 225, 255, 0.2) 0%, rgba(0, 255, 163, 0.2) 100%);
-    border: 1px solid var(--surge-green);
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.verify-captcha:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--ocean-blue-glow);
-    background: linear-gradient(135deg, rgba(3, 225, 255, 0.3) 0%, rgba(0, 255, 163, 0.3) 100%);
-}
-
-.pattern-grid {
-    margin: 20px auto;
-    background: rgba(3, 225, 255, 0.05);
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--ocean-blue);
-    box-shadow: 0 0 15px var(--ocean-blue-glow);
-}
-
-.pattern-cell {
-    background: rgba(0, 255, 163, 0.05);
-    border: 1px solid var(--surge-green);
-    transition: all 0.3s ease;
-    border-radius: 4px;
-}
-
-.pattern-cell:hover {
-    background: rgba(0, 255, 163, 0.1);
-    box-shadow: 0 0 10px var(--surge-green-glow);
-}
-
-.pattern-cell.selected {
-    background: var(--surge-green);
-    box-shadow: 0 0 15px var(--surge-green-glow);
-}
-
-/* Update captcha challenge container */
-.captcha-challenge {
-    min-height: 120px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Add transition for pattern cells */
-.pattern-cell {
-    position: relative;
-    overflow: hidden;
-}
-
-.pattern-cell::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: var(--surge-green);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-.pattern-cell.selected::after {
-    width: 10px;
-    height: 10px;
-    opacity: 1;
 } 

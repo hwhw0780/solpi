@@ -14,7 +14,7 @@
                 <img src="images/logo.png" alt="SOLPI Logo" class="main-logo">
             </div>
             <div class="header-buttons">
-                <button class="connect-wallet" title="Connect Wallet">👛</button>
+                <button class="connect-wallet">Connect Wallet</button>
             </div>
         </header>
 
@@ -24,7 +24,7 @@
             <div class="about-cards">
                 <div class="about-card">
                     <h3>What is SOLPI (SPI)?</h3>
-                    <p>SOLPI is a revolutionary "Help to Earn" cryptocurrency built on Solana, where users contribute to global AI development by solving captchas. By helping train and improve AI systems worldwide through simple captcha solutions, users earn SPI tokens as rewards. This eco-friendly approach eliminates the need for expensive mining hardware or high energy consumption, making it accessible to everyone through Telegram while actively contributing to the advancement of AI technology.</p>
+                    <p>SOLPI is a next-generation community-driven cryptocurrency built on Solana, designed for fast, fair, and eco-friendly mining. Unlike traditional mining, SOLPI lets users earn SPI directly from Telegram—no expensive hardware or high energy costs required.</p>
                 </div>
 
                 <div class="mining-container">
@@ -63,23 +63,23 @@
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon">🌿</div>
-                        <h4>Help to Earn</h4>
-                        <p>Earn rewards by helping train AI systems through simple captcha solutions.</p>
+                        <h4>Eco-Friendly</h4>
+                        <p>No high-power mining rigs, just a simple Telegram app.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">⚡</div>
-                        <h4>AI Development</h4>
-                        <p>Contribute to global AI advancement while earning SPI tokens.</p>
+                        <h4>Instant Transactions</h4>
+                        <p>Built on Solana, ensuring lightning-fast transfers.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🤝</div>
-                        <h4>Community Impact</h4>
-                        <p>Be part of a community that shapes the future of AI technology.</p>
+                        <h4>Community-Driven</h4>
+                        <p>Help AI while earning, making the world smarter.</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🚀</div>
-                        <h4>Easy Access</h4>
-                        <p>Start earning through Telegram—no technical expertise needed!</p>
+                        <h4>Easy to Start</h4>
+                        <p>No technical knowledge needed—just join, mine, and earn!</p>
                     </div>
                 </div>
 
@@ -191,9 +191,9 @@
                     <span class="button-icon">📋</span>
                     Roadmap
                 </button>
-                <button class="info-button" onclick="openModal('tokenomics')">
-                    <span class="button-icon">📊</span>
-                    Tokenomics
+                <button class="info-button" onclick="openModal('whitepaper')">
+                    <span class="button-icon">📄</span>
+                    Whitepaper
                 </button>
             </div>
         </div>
@@ -249,64 +249,27 @@
         </div>
     </div>
 
-    <!-- Tokenomics Modal -->
-    <div id="tokenomics" class="modal">
+    <!-- Whitepaper Modal -->
+    <div id="whitepaper" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('tokenomics')">&times;</span>
-            <h2>Tokenomics Distribution</h2>
-            <div class="tokenomics-container">
-                <div class="tokenomics-chart-container">
-                    <div class="tokenomics-chart">
-                        <div class="chart-segment community"></div>
-                        <div class="chart-segment dev"></div>
-                        <div class="chart-segment marketing"></div>
-                        <div class="chart-segment kol"></div>
-                        <div class="chart-segment dex"></div>
-                    </div>
-                </div>
-                <div class="tokenomics-legend">
-                    <div class="legend-item">
-                        <span class="legend-color community"></span>
-                        <span class="legend-text">70% - Community Rewards (Mining)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color dev"></span>
-                        <span class="legend-text">5% - Development</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color marketing"></span>
-                        <span class="legend-text">5% - Marketing</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color kol"></span>
-                        <span class="legend-text">10% - Key Opinion Leaders (KOL)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-color dex"></span>
-                        <span class="legend-text">10% - DEX Liquidity</span>
-                    </div>
-                </div>
-            </div>
+            <span class="close" onclick="closeModal('whitepaper')">&times;</span>
+            <h2>Whitepaper</h2>
+            <p>This is the content of the whitepaper.</p>
         </div>
     </div>
 
     <div class="captcha-modal" id="captchaModal">
         <div class="captcha-content">
             <h3>Solve Captcha to Boost Mining Power</h3>
-            <div class="custom-captcha">
-                <div class="captcha-challenge" id="captchaChallenge"></div>
-                <input type="text" id="captchaInput" placeholder="Enter the code above" maxlength="6">
-                <div class="captcha-buttons">
-                    <button class="refresh-captcha" onclick="refreshCaptcha()">
-                        <span class="button-icon">🔄</span>
-                    </button>
-                    <button class="verify-captcha" onclick="verifyCaptcha()">Verify</button>
-                    <button class="close-captcha" onclick="closeCaptchaModal()">Cancel</button>
-                </div>
+            <div class="g-recaptcha" 
+                data-sitekey="6LcgFekqAAAAAM8npWgBpK21Kh_cXrIwe_ZFHuNV"
+                data-callback="onCaptchaSuccess">
             </div>
+            <button class="close-captcha" onclick="closeCaptchaModal()">Cancel</button>
         </div>
     </div>
 
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="script.js"></script>
 </body>
 </html> 
