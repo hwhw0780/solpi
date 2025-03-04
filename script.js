@@ -106,8 +106,8 @@ let currentCaptchaType = '';
 const updateTotalMined = () => {
     const miningRate = BASE_MINING_RATE * miningPower;
     totalMined += miningRate;
-    document.getElementById('mining-rate').textContent = miningRate.toFixed(2);
-    document.getElementById('total-mined').textContent = totalMined.toFixed(2) + ' USDT';
+    document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(3);
+    document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
 };
 
 // Enhanced Particle Animation
@@ -510,14 +510,19 @@ function updateMining() {
 
 // Update mining rate based on staked amount
 function updateMiningRate() {
-    document.getElementById('mining-rate').textContent = currentMiningRate.toFixed(3);
+    // Display base rate (always 0.005)
+    document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(3);
+    
+    // Calculate and display actual mining rate with multipliers
+    const actualRate = BASE_MINING_RATE * miningPower;
+    document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(3);
 }
 
 // Update all displays
 function updateDisplays() {
     document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
     document.getElementById('staked-amount').textContent = stakedAmount.toLocaleString() + ' SOLPI';
-    document.getElementById('mining-rate').textContent = currentMiningRate.toFixed(3);
+    document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(3);
     document.getElementById('solpiBalance').textContent = '0 SOLPI'; // Update with actual balance when wallet is connected
     document.getElementById('usdtBalance').textContent = totalMined.toFixed(3) + ' USDT';
 }

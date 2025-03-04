@@ -125,76 +125,217 @@ body {
 }
 
 .mining-rate {
-    margin: 20px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    text-align: center;
+    background: rgba(0, 255, 163, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0, 255, 163, 0.2);
 }
 
 .base-rate-container {
-    background: rgba(3, 225, 255, 0.05);
-    border: 1px solid var(--ocean-blue);
-    border-radius: 16px;
-    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    min-width: 280px;
 }
 
-.base-rate-label {
-    color: var(--ocean-blue);
-    font-size: 18px;
-    font-weight: 500;
-}
-
-.base-rate-value {
+.staking-info {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
-    font-size: 32px;
-    color: var(--surge-green);
-    font-weight: 600;
-    text-shadow: 0 0 20px var(--surge-green-glow);
-}
-
-.rate-unit {
-    color: var(--ocean-blue);
-    font-size: 16px;
-    font-weight: 500;
-    opacity: 0.8;
-}
-
-.deposit-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 8px;
+    margin: 10px 0;
+}
+
+.min-stake {
+    color: #00FFA3;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.calculate-btn {
+    background: linear-gradient(135deg, #2C3E50, #3498DB);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 8px 16px;
     cursor: pointer;
+    font-size: 0.9em;
     transition: all 0.3s ease;
-    background: linear-gradient(135deg, rgba(3, 225, 255, 0.1) 0%, rgba(0, 255, 163, 0.1) 100%);
-    border: 1px solid var(--surge-green);
-    color: #fff;
-    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.calculate-btn:hover {
+    background: linear-gradient(135deg, #34495E, #2980B9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.deposit-button, .withdraw-button {
+    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    border-radius: 8px;
+    color: #00FFA3;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .deposit-button:hover {
+    background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px var(--ocean-blue-glow);
-    background: linear-gradient(135deg, rgba(3, 225, 255, 0.2) 0%, rgba(0, 255, 163, 0.2) 100%);
+    box-shadow: 0 4px 15px rgba(0, 255, 163, 0.2);
 }
 
-.coin-icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 8px var(--surge-green-glow));
+.withdraw-button {
+    background: linear-gradient(135deg, #2C3E50, #3498DB);
+    color: white;
+    border: none;
+}
+
+.withdraw-button:hover {
+    background: linear-gradient(135deg, #34495E, #2980B9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+/* Calculator Modal Styles */
+.calculator-content {
+    max-width: 400px;
+    padding: 25px;
+}
+
+.calculator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    color: #00FFA3;
+    font-size: 0.9em;
+}
+
+.input-group input {
+    background: rgba(26, 26, 26, 0.8);
+    border: 1px solid rgba(0, 255, 163, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+    font-size: 1em;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #00FFA3;
+}
+
+.calculation-result {
+    background: rgba(0, 255, 163, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    color: #00FFA3;
+    font-size: 0.9em;
+}
+
+.calculate-confirm {
+    background: linear-gradient(135deg, #00FFA3, #00B377);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.calculate-confirm:hover {
+    background: linear-gradient(135deg, #00B377, #008055);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 163, 0.3);
+}
+
+/* Deposit and Withdraw Modal Styles */
+.deposit-content, .withdraw-content {
+    max-width: 400px;
+    padding: 25px;
+}
+
+.deposit-form, .withdraw-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.balance-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 255, 163, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+}
+
+.deposit-confirm, .withdraw-confirm {
+    background: linear-gradient(135deg, #00FFA3, #00B377);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.deposit-confirm:hover, .withdraw-confirm:hover {
+    background: linear-gradient(135deg, #00B377, #008055);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 163, 0.3);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .deposit-button, .withdraw-button {
+        width: 100%;
+    }
+
+    .calculator-content, .deposit-content, .withdraw-content {
+        width: 90%;
+        margin: 20px auto;
+    }
 }
 
 .mining-circle {
@@ -1665,4 +1806,65 @@ body {
     font-family: 'Courier New', monospace;
     margin: 15px 0;
     color: #00FFA3;
+}
+
+.coin-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-left: 4px;
+    margin-right: 4px;
+    filter: drop-shadow(0 0 4px rgba(0, 255, 163, 0.5));
+}
+
+.base-rate-value .coin-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: -2px;
+}
+
+@media (max-width: 768px) {
+    .coin-icon {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .base-rate-value .coin-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.actual-rate {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(0, 255, 163, 0.1);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.actual-rate-label {
+    font-size: 0.9em;
+    color: #7a7a7a;
+    margin-bottom: 5px;
+}
+
+.actual-rate-value {
+    font-size: 1.4em;
+    color: #00FFA3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+@media (max-width: 768px) {
+    .actual-rate {
+        margin-top: 8px;
+        padding: 8px;
+    }
+
+    .actual-rate-value {
+        font-size: 1.2em;
+    }
 } 

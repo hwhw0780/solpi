@@ -37,14 +37,35 @@
                         <div class="base-rate-container">
                             <div class="base-rate-label">Base Rate:</div>
                             <div class="base-rate-value">
-                                <span id="mining-rate">10.00</span>
-                                <img src="images/coin.png" alt="SPI Coin" class="coin-icon">
+                                <span id="mining-rate">0.005</span>
+                                <img src="images/usdt.png" alt="USDT" class="coin-icon">
                             </div>
-                            <div class="rate-unit">SPI/min</div>
-                            <button class="deposit-button">
-                                <span class="button-icon">💎</span>
-                                Deposit to Base Rate
-                            </button>
+                            <div class="rate-unit">USDT/min</div>
+                            <div class="actual-rate">
+                                <div class="actual-rate-label">Current Rate:</div>
+                                <div class="actual-rate-value">
+                                    <span id="actual-mining-rate">0.005</span>
+                                    <img src="images/usdt.png" alt="USDT" class="coin-icon">
+                                </div>
+                                <div class="rate-unit">USDT/min</div>
+                            </div>
+                            <div class="staking-info">
+                                <span class="min-stake">Min. Stake: 100,000 SOLPI</span>
+                                <button class="calculate-btn" onclick="showCalculator()">
+                                    <span class="button-icon">🧮</span>
+                                    Calculate Returns
+                                </button>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="deposit-button" onclick="showDepositDialog()">
+                                    <span class="button-icon">💎</span>
+                                    Deposit SOLPI
+                                </button>
+                                <button class="withdraw-button" onclick="showWithdrawDialog()">
+                                    <span class="button-icon">💰</span>
+                                    Withdraw USDT
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -52,13 +73,13 @@
                         <div class="mining-animation"></div>
                         <div class="mining-particles"></div>
                         <div class="mining-pulse"></div>
-                        <div class="mining-status">Mining</div>
+                        <div class="mining-status">Mining USDT</div>
                     </div>
 
                     <div class="stats">
                         <div class="stat-card">
                             <div>Total Mined</div>
-                            <div class="stat-value" id="total-mined">0.00 SPI</div>
+                            <div class="stat-value" id="total-mined">0.000 USDT</div>
                         </div>
                         <div class="stat-card">
                             <div>Mining Power</div>
@@ -102,17 +123,18 @@
                             <div class="method-icon">⏳</div>
                             <h4>Time-Based Mining</h4>
                             <ul>
-                                <li>Earn 1 SPI per minute just by keeping the Telegram app open</li>
-                                <li>The longer you stay active, the more you mine</li>
+                                <li>Earn 0.005 USDT per minute with base rate</li>
+                                <li>Increase earnings by staking more SOLPI</li>
+                                <li>The longer you stake, the more you earn</li>
                             </ul>
                         </div>
                         <div class="method-card">
                             <div class="method-icon">🤖</div>
                             <h4>Task-Based Boosts</h4>
                             <ul>
-                                <li>Solve Captchas to train AI systems worldwide</li>
-                                <li>Contribute to a better, more secure internet</li>
-                                <li>Earn extra SPI as rewards</li>
+                                <li>Solve captchas to boost your mining power</li>
+                                <li>Each solve adds 0.05x to your mining rate</li>
+                                <li>Boosts last for 2 hours</li>
                             </ul>
                             <button class="method-button solve-captcha" onclick="alert('Redirecting to Captcha solving interface...')">
                                 <span class="button-icon">🤖</span>
@@ -402,6 +424,73 @@
                     <button class="verify-captcha" onclick="verifyCaptcha()">Verify</button>
                     <button class="close-captcha" onclick="closeCaptchaModal()">Cancel</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculator Modal -->
+    <div id="calculatorModal" class="modal">
+        <div class="modal-content calculator-content">
+            <span class="close" onclick="closeCalculator()">&times;</span>
+            <h3>SOLPI Staking Calculator</h3>
+            <div class="calculator-form">
+                <div class="input-group">
+                    <label for="solpiAmount">SOLPI Amount:</label>
+                    <input type="number" id="solpiAmount" min="100000" placeholder="Enter SOLPI amount">
+                </div>
+                <div class="calculation-result">
+                    <div class="result-item">
+                        <span>Base Rate Addition:</span>
+                        <span id="baseRateAddition">0.000 USDT</span>
+                    </div>
+                    <div class="result-item">
+                        <span>USDT per minute:</span>
+                        <span id="usdtPerMinute">0.000 USDT</span>
+                    </div>
+                    <div class="result-item">
+                        <span>USDT per day:</span>
+                        <span id="usdtPerDay">0.000 USDT</span>
+                    </div>
+                </div>
+                <button class="calculate-confirm" onclick="calculateReturns()">Calculate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div id="depositModal" class="modal">
+        <div class="modal-content deposit-content">
+            <span class="close" onclick="closeDepositDialog()">&times;</span>
+            <h3>Deposit SOLPI</h3>
+            <div class="deposit-form">
+                <div class="input-group">
+                    <label for="depositAmount">Amount to Deposit:</label>
+                    <input type="number" id="depositAmount" min="100000" placeholder="Min. 100,000 SOLPI">
+                </div>
+                <div class="balance-info">
+                    <span>Your SOLPI Balance:</span>
+                    <span id="solpiBalance">0 SOLPI</span>
+                </div>
+                <button class="deposit-confirm" onclick="confirmDeposit()">Confirm Deposit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content withdraw-content">
+            <span class="close" onclick="closeWithdrawDialog()">&times;</span>
+            <h3>Withdraw USDT</h3>
+            <div class="withdraw-form">
+                <div class="input-group">
+                    <label for="withdrawAmount">Amount to Withdraw:</label>
+                    <input type="number" id="withdrawAmount" step="0.01" placeholder="Enter USDT amount">
+                </div>
+                <div class="balance-info">
+                    <span>Available USDT:</span>
+                    <span id="usdtBalance">0.000 USDT</span>
+                </div>
+                <button class="withdraw-confirm" onclick="confirmWithdraw()">Confirm Withdraw</button>
             </div>
         </div>
     </div>
