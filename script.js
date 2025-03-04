@@ -106,12 +106,20 @@ function closeCaptchaModal() {
     grecaptcha.reset();
 }
 
-function onCaptchaSuccess(token) {
-    // In a real implementation, verify the token with your server
-    closeCaptchaModal();
-    const endTime = new Date().getTime() + (2 * 60 * 60 * 1000); // 2 hours
-    activateBoost(endTime);
-    localStorage.setItem('boostEndTime', endTime.toString());
+async function onCaptchaSuccess(token) {
+    try {
+        // In a production environment, you would verify the token with your server
+        // using the secret key: 6LcgFekqAAAAAC8yYr5VDdoy0SSHEIHTABo7rKJ5
+        // For now, we'll proceed with the boost
+        closeCaptchaModal();
+        const endTime = new Date().getTime() + (2 * 60 * 60 * 1000); // 2 hours
+        activateBoost(endTime);
+        localStorage.setItem('boostEndTime', endTime.toString());
+    } catch (error) {
+        console.error('Error verifying captcha:', error);
+        alert('Failed to verify captcha. Please try again.');
+        grecaptcha.reset();
+    }
 }
 
 // Event Listeners
