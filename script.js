@@ -1,7 +1,8 @@
 // Mining Constants and Variables
-const MINING_RATE = 10;
+const BASE_MINING_RATE = 10;
 let totalMined = 0;
 let currentCaptchaCode = '';
+let miningPower = parseFloat(localStorage.getItem('miningPower')) || 1.0;
 
 // DOM Elements
 const boostButton = document.getElementById('boostButton');
@@ -17,7 +18,9 @@ let boostActive = false;
 
 // Mining Functions
 const updateTotalMined = () => {
-    totalMined += MINING_RATE;
+    const miningRate = BASE_MINING_RATE * miningPower;
+    totalMined += miningRate;
+    document.getElementById('mining-rate').textContent = miningRate.toFixed(2);
     document.getElementById('total-mined').textContent = totalMined.toFixed(2) + ' SPI';
 };
 
@@ -110,9 +113,16 @@ function verifyCaptcha() {
     const userInput = captchaInput.value.toUpperCase();
     if (userInput === currentCaptchaCode) {
         closeCaptchaModal();
+        // Increase mining power by 0.1
+        miningPower += 0.1;
+        localStorage.setItem('miningPower', miningPower.toString());
+        
         const endTime = new Date().getTime() + (2 * 60 * 60 * 1000); // 2 hours
         activateBoost(endTime);
         localStorage.setItem('boostEndTime', endTime.toString());
+        
+        // Update display
+        miningPowerElement.textContent = miningPower.toFixed(1) + 'x';
     } else {
         alert('Incorrect code. Please try again.');
         refreshCaptcha();
@@ -140,24 +150,21 @@ function checkExistingBoost() {
 function activateBoost(endTime) {
     boostActive = true;
     boostButton.disabled = true;
-    miningPowerElement.textContent = '1.1x';
     updateCountdown(endTime);
 
     const countdownInterval = setInterval(() => {
         const remaining = updateCountdown(endTime);
         if (remaining <= 0) {
             clearInterval(countdownInterval);
-            deactivateBoost();
+            enableBoostButton();
         }
     }, 1000);
 }
 
-function deactivateBoost() {
+function enableBoostButton() {
     boostActive = false;
     boostButton.disabled = false;
-    miningPowerElement.textContent = '1x';
     countdownElement.textContent = '';
-    localStorage.removeItem('boostEndTime');
 }
 
 function updateCountdown(endTime) {
@@ -188,6 +195,12 @@ function closeModal(modalId) {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize mining power display
+    miningPowerElement.textContent = miningPower.toFixed(1) + 'x';
+    
+    // Initialize mining rate display
+    document.getElementById('mining-rate').textContent = (BASE_MINING_RATE * miningPower).toFixed(2);
+
     // Initialize mining update interval
     setInterval(updateTotalMined, 60000);
 
