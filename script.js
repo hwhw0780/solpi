@@ -3,6 +3,7 @@ const BASE_MINING_RATE = 10;
 let totalMined = 0;
 let currentCaptchaCode = '';
 let miningPower = parseFloat(localStorage.getItem('miningPower')) || 1.0;
+let canvas = null;
 
 // DOM Elements
 const boostButton = document.getElementById('boostButton');
@@ -59,6 +60,11 @@ const countries = [
     { name: 'Kenya', x: 145, y: 140 },
     { name: 'Morocco', x: 115, y: 115 }
 ];
+
+const worldNodes = countries.map(country => ({
+    x: country.x,
+    y: country.y
+}));
 
 const captchaSolveMessages = [
     'solved an image recognition captcha',
@@ -125,7 +131,7 @@ const createParticle = (e = null) => {
             particles.appendChild(particle);
             setTimeout(() => particle.remove(), 2000);
         }
-    } else {
+    } else if (worldNodes && worldNodes.length > 0) {
         // Create ambient particles
         const particle = document.createElement('div');
         particle.className = 'particle';
@@ -204,11 +210,14 @@ function generatePattern() {
 }
 
 function displayCaptcha() {
-    // Randomly select captcha type
-    const types = Object.values(CAPTCHA_TYPES);
-    currentCaptchaType = types[Math.floor(Math.random() * types.length)];
-    
-    const canvas = document.createElement('canvas');
+    // Clear previous canvas if exists
+    const existingCanvas = captchaChallenge.querySelector('canvas');
+    if (existingCanvas) {
+        existingCanvas.remove();
+    }
+
+    // Create new canvas
+    canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = 200;
     canvas.height = 60;
@@ -216,6 +225,12 @@ function displayCaptcha() {
     // Background
     ctx.fillStyle = '#1a1a1a';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Randomly select captcha type
+    const types = Object.values(CAPTCHA_TYPES);
+    currentCaptchaType = types[Math.floor(Math.random() * types.length)];
+    
+    captchaChallenge.appendChild(canvas);
 
     switch (currentCaptchaType) {
         case CAPTCHA_TYPES.TEXT:
