@@ -1,6 +1,12 @@
 // Mining Constants and Variables
-const BASE_MINING_RATE = 10;
+const BASE_MINING_RATE = 0.005; // USDT per minute
+const MIN_STAKE_AMOUNT = 100000; // Minimum SOLPI required
+const RATE_MULTIPLIER = 0.01; // USDT addition per 10M SOLPI staked
+const POWER_INCREMENT = 0.05; // Mining power increase per captcha solve
+
 let totalMined = 0;
+let stakedAmount = 0;
+let currentMiningRate = BASE_MINING_RATE;
 let currentCaptchaCode = '';
 let miningPower = parseFloat(localStorage.getItem('miningPower')) || 1.0;
 let canvas = null;
@@ -16,6 +22,7 @@ const captchaInput = document.getElementById('captchaInput');
 // Boost State
 let boostEndTime = localStorage.getItem('boostEndTime');
 let boostActive = false;
+let boostDuration = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
 // World Map Data
 const countries = [
@@ -90,8 +97,7 @@ const aiActivities = [
 // Captcha Types
 const CAPTCHA_TYPES = {
     TEXT: 'text',
-    MATH: 'math',
-    PATTERN: 'pattern'
+    MATH: 'math'
 };
 
 let currentCaptchaType = '';
@@ -101,7 +107,7 @@ const updateTotalMined = () => {
     const miningRate = BASE_MINING_RATE * miningPower;
     totalMined += miningRate;
     document.getElementById('mining-rate').textContent = miningRate.toFixed(2);
-    document.getElementById('total-mined').textContent = totalMined.toFixed(2) + ' SPI';
+    document.getElementById('total-mined').textContent = totalMined.toFixed(2) + ' USDT';
 };
 
 // Enhanced Particle Animation
@@ -188,27 +194,6 @@ function generateMathProblem() {
     };
 }
 
-function generatePattern() {
-    const gridSize = 3;
-    const pattern = [];
-    const minDots = 3;
-    const maxDots = 5;
-    const numDots = Math.floor(Math.random() * (maxDots - minDots + 1)) + minDots;
-    
-    // Generate random dots
-    for (let i = 0; i < numDots; i++) {
-        let x, y;
-        do {
-            x = Math.floor(Math.random() * gridSize);
-            y = Math.floor(Math.random() * gridSize);
-        } while (pattern.some(dot => dot.x === x && dot.y === y));
-        
-        pattern.push({ x, y });
-    }
-    
-    return pattern;
-}
-
 function displayCaptcha() {
     // Clear previous canvas if exists
     const existingCanvas = captchaChallenge.querySelector('canvas');
@@ -244,15 +229,6 @@ function displayCaptcha() {
             currentCaptchaCode = mathProblem.answer;
             displayMathCaptcha(ctx, mathProblem.problem);
             captchaInput.placeholder = 'Enter the answer';
-            break;
-            
-        case CAPTCHA_TYPES.PATTERN:
-            const pattern = generatePattern();
-            currentCaptchaCode = JSON.stringify(pattern);
-            displayPatternCaptcha(ctx, pattern);
-            captchaInput.placeholder = 'Click the pattern on the grid';
-            // Create clickable grid
-            createPatternGrid();
             break;
     }
 }
@@ -299,83 +275,6 @@ function displayMathCaptcha(ctx, problem) {
     ctx.fillText(problem, canvas.width / 2, canvas.height / 2);
 }
 
-function displayPatternCaptcha(ctx, pattern) {
-    const gridSize = 3;
-    const cellSize = 40;
-    const startX = (canvas.width - gridSize * cellSize) / 2;
-    const startY = (canvas.height - gridSize * cellSize) / 2;
-
-    // Draw grid
-    ctx.strokeStyle = '#00FFA3';
-    for (let i = 0; i <= gridSize; i++) {
-        ctx.beginPath();
-        ctx.moveTo(startX + i * cellSize, startY);
-        ctx.lineTo(startX + i * cellSize, startY + gridSize * cellSize);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(startX, startY + i * cellSize);
-        ctx.lineTo(startX + gridSize * cellSize, startY + i * cellSize);
-        ctx.stroke();
-    }
-
-    // Draw dots
-    ctx.fillStyle = '#00FFA3';
-    pattern.forEach(dot => {
-        ctx.beginPath();
-        ctx.arc(
-            startX + (dot.x + 0.5) * cellSize,
-            startY + (dot.y + 0.5) * cellSize,
-            5,
-            0,
-            Math.PI * 2
-        );
-        ctx.fill();
-    });
-}
-
-function createPatternGrid() {
-    const gridContainer = document.createElement('div');
-    gridContainer.className = 'pattern-grid';
-    gridContainer.style.display = 'grid';
-    gridContainer.style.gridTemplateColumns = 'repeat(3, 40px)';
-    gridContainer.style.gap = '2px';
-    gridContainer.style.marginTop = '10px';
-
-    const selectedDots = [];
-
-    for (let y = 0; y < 3; y++) {
-        for (let x = 0; x < 3; x++) {
-            const cell = document.createElement('div');
-            cell.className = 'pattern-cell';
-            cell.style.width = '40px';
-            cell.style.height = '40px';
-            cell.style.border = '1px solid #00FFA3';
-            cell.style.cursor = 'pointer';
-
-            cell.addEventListener('click', () => {
-                const dot = { x, y };
-                const dotIndex = selectedDots.findIndex(d => d.x === x && d.y === y);
-                
-                if (dotIndex === -1) {
-                    selectedDots.push(dot);
-                    cell.style.backgroundColor = '#00FFA3';
-                } else {
-                    selectedDots.splice(dotIndex, 1);
-                    cell.style.backgroundColor = 'transparent';
-                }
-                
-                // Update input value with selected pattern
-                captchaInput.value = JSON.stringify(selectedDots);
-            });
-
-            gridContainer.appendChild(cell);
-        }
-    }
-
-    captchaChallenge.appendChild(gridContainer);
-}
-
 function verifyCaptcha() {
     let isCorrect = false;
     
@@ -387,27 +286,26 @@ function verifyCaptcha() {
         case CAPTCHA_TYPES.MATH:
             isCorrect = captchaInput.value === currentCaptchaCode;
             break;
-            
-        case CAPTCHA_TYPES.PATTERN:
-            const userPattern = JSON.parse(captchaInput.value || '[]');
-            const correctPattern = JSON.parse(currentCaptchaCode);
-            isCorrect = userPattern.length === correctPattern.length &&
-                userPattern.every(dot => 
-                    correctPattern.some(p => p.x === dot.x && p.y === dot.y)
-                );
-            break;
     }
 
     if (isCorrect) {
         closeCaptchaModal();
-        miningPower += 0.1;
+        // Permanently increase mining power
+        miningPower += POWER_INCREMENT;
         localStorage.setItem('miningPower', miningPower.toString());
         
-        const endTime = new Date().getTime() + (2 * 60 * 60 * 1000); // 2 hours
-        activateBoost(endTime);
-        localStorage.setItem('boostEndTime', endTime.toString());
+        // Set new boost duration
+        const now = new Date().getTime();
+        const newEndTime = now + boostDuration; // Always 2 hours from now
         
-        miningPowerElement.textContent = miningPower.toFixed(1) + 'x';
+        activateBoost(newEndTime);
+        localStorage.setItem('boostEndTime', newEndTime.toString());
+        
+        // Update mining power display
+        miningPowerElement.textContent = miningPower.toFixed(2) + 'x';
+        
+        // Update mining rate display to reflect new power
+        updateMiningRate();
     } else {
         alert('Incorrect. Please try again.');
         refreshCaptcha();
@@ -432,6 +330,8 @@ function checkExistingBoost() {
             activateBoost(parseInt(boostEndTime));
         } else {
             localStorage.removeItem('boostEndTime');
+            // Don't reset mining power when boost expires
+            boostButton.disabled = false;
         }
     }
 }
@@ -454,6 +354,7 @@ function enableBoostButton() {
     boostActive = false;
     boostButton.disabled = false;
     countdownElement.textContent = '';
+    // Don't reset mining power when boost expires
 }
 
 function updateCountdown(endTime) {
@@ -588,6 +489,131 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Modal click outside to close
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+        }
+    };
+
+    // Connect wallet button handler
+    document.querySelector('.connect-wallet').addEventListener('click', () => {
+        alert('Wallet connection feature coming soon!');
+    });
+});
+
+// Mining update interval
+function updateMining() {
+    totalMined += currentMiningRate * miningPower;
+    localStorage.setItem('totalMined', totalMined);
+    updateDisplays();
+}
+
+// Update mining rate based on staked amount
+function updateMiningRate() {
+    document.getElementById('mining-rate').textContent = currentMiningRate.toFixed(3);
+}
+
+// Update all displays
+function updateDisplays() {
+    document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
+    document.getElementById('staked-amount').textContent = stakedAmount.toLocaleString() + ' SOLPI';
+    document.getElementById('mining-rate').textContent = currentMiningRate.toFixed(3);
+    document.getElementById('solpiBalance').textContent = '0 SOLPI'; // Update with actual balance when wallet is connected
+    document.getElementById('usdtBalance').textContent = totalMined.toFixed(3) + ' USDT';
+}
+
+// Calculator Functions
+function showCalculator() {
+    document.getElementById('calculatorModal').style.display = 'flex';
+}
+
+function closeCalculator() {
+    document.getElementById('calculatorModal').style.display = 'none';
+}
+
+function calculateReturns() {
+    const amount = parseInt(document.getElementById('solpiAmount').value);
+    if (isNaN(amount) || amount < MIN_STAKE_AMOUNT) {
+        alert('Please enter a valid amount (minimum 100,000 SOLPI)');
+        return;
+    }
+
+    const baseRateAddition = Math.floor(amount / 10000000) * RATE_MULTIPLIER;
+    const totalRate = BASE_MINING_RATE + baseRateAddition;
+    const dailyRate = totalRate * 60 * 24;
+
+    document.getElementById('baseRateAddition').textContent = 
+        baseRateAddition.toFixed(3) + ' USDT';
+    document.getElementById('usdtPerMinute').textContent = 
+        totalRate.toFixed(3) + ' USDT';
+    document.getElementById('usdtPerDay').textContent = 
+        dailyRate.toFixed(3) + ' USDT';
+}
+
+// Deposit Functions
+function showDepositDialog() {
+    document.getElementById('depositModal').style.display = 'flex';
+}
+
+function closeDepositDialog() {
+    document.getElementById('depositModal').style.display = 'none';
+}
+
+function confirmDeposit() {
+    const amount = parseInt(document.getElementById('depositAmount').value);
+    if (isNaN(amount) || amount < MIN_STAKE_AMOUNT) {
+        alert('Please enter a valid amount (minimum 100,000 SOLPI)');
+        return;
+    }
+
+    // Here you would typically interact with the wallet and smart contract
+    // For now, we'll just update the UI
+    stakedAmount += amount;
+    localStorage.setItem('stakedAmount', stakedAmount);
+    updateMiningRate();
+    updateDisplays();
+    closeDepositDialog();
+}
+
+// Withdraw Functions
+function showWithdrawDialog() {
+    document.getElementById('withdrawModal').style.display = 'flex';
+}
+
+function closeWithdrawDialog() {
+    document.getElementById('withdrawModal').style.display = 'none';
+}
+
+function confirmWithdraw() {
+    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+    if (isNaN(amount) || amount <= 0 || amount > totalMined) {
+        alert('Please enter a valid amount to withdraw');
+        return;
+    }
+
+    // Here you would typically interact with the wallet and smart contract
+    // For now, we'll just update the UI
+    totalMined -= amount;
+    localStorage.setItem('totalMined', totalMined);
+    updateDisplays();
+    closeWithdrawDialog();
+}
+
+// Initialize mining data from localStorage
+function initializeMiningData() {
+    totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
+    stakedAmount = parseInt(localStorage.getItem('stakedAmount')) || 0;
+    miningPower = parseFloat(localStorage.getItem('miningPower')) || 1.0;
+    updateMiningRate();
+    updateDisplays();
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    initializeMiningData();
+    setInterval(updateMining, 60000); // Update mining rewards every minute
+
+    // Close modals when clicking outside
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
