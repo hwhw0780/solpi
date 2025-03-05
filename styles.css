@@ -81,8 +81,8 @@ body {
 }
 
 .wallet-icon {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     margin-right: 8px;
 }
 
@@ -326,6 +326,30 @@ body {
     .calculator-content, .deposit-content, .withdraw-content {
         width: 90%;
         margin: 20px auto;
+    }
+
+    .wallet-icon {
+        width: 56px !important;
+        height: 56px !important;
+    }
+    
+    .connect-wallet {
+        padding: 16px;
+    }
+    
+    .connect-wallet-btn {
+        padding: 16px 24px;
+        font-size: 18px;
+    }
+    
+    .connect-wallet-btn .wallet-icon {
+        width: 52px !important;
+        height: 52px !important;
+    }
+
+    .modal .wallet-icon {
+        width: 52px !important;
+        height: 52px !important;
     }
 }
 
@@ -1966,4 +1990,14 @@ body {
         width: 44px;
         height: 44px;
     }
+}
+
+@keyframes highlight-glow {
+    0% { box-shadow: 0 0 5px var(--surge-green-glow); }
+    50% { box-shadow: 0 0 20px var(--surge-green-glow); }
+    100% { box-shadow: 0 0 5px var(--surge-green-glow); }
+}
+
+.highlight-section {
+    animation: highlight-glow 2s ease-in-out;
 } 
