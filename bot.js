@@ -23,29 +23,67 @@ const activeMiningUsers = new Map();
 // Function to start mining for a user
 async function startMining(userId, username) {
     try {
-        debugLog('START_MINING', `Attempting to start mining for user: ${username}`, { userId });
+        debugLog('START_MINING', `Starting mining process for user: ${username}`, { userId, timestamp: new Date() });
+
+        if (!username) {
+            debugLog('ERROR', 'No username provided', { userId });
+            return false;
+        }
 
         // Check if user exists in database
+        debugLog('DATABASE', `Looking up user in database: ${username}`);
         let user = await User.findOne({ where: { telegramUsername: username } });
-        debugLog('DATABASE', `User lookup result for ${username}:`, user);
         
         if (!user) {
-            debugLog('REGISTRATION', `Creating new user: ${username}`);
-            // Create new user if doesn't exist
-            user = await User.create({
-                telegramUsername: username,
-                registrationDate: new Date(),
-                lastActive: new Date(),
-                miningPower: 1.0,
-                totalMined: 0,
-                status: 'active'
+            debugLog('REGISTRATION', `User ${username} not found in database. Creating new user...`, {
+                userId,
+                timestamp: new Date(),
+                action: 'new_user_creation'
             });
-            debugLog('REGISTRATION', 'New user created successfully:', user);
+
+            try {
+                user = await User.create({
+                    telegramUsername: username,
+                    registrationDate: new Date(),
+                    lastActive: new Date(),
+                    miningPower: 1.0,
+                    totalMined: 0,
+                    status: 'active'
+                });
+                debugLog('REGISTRATION_SUCCESS', `Successfully created new user: ${username}`, {
+                    userId,
+                    userData: user,
+                    timestamp: new Date()
+                });
+            } catch (error) {
+                debugLog('REGISTRATION_ERROR', `Failed to create user: ${username}`, {
+                    error: error.message,
+                    stack: error.stack,
+                    userId
+                });
+                throw error;
+            }
+        } else {
+            debugLog('USER_FOUND', `Existing user found: ${username}`, {
+                userId,
+                lastActive: user.lastActive,
+                miningPower: user.miningPower
+            });
         }
 
         // Update last active time
-        await user.update({ lastActive: new Date() });
-        debugLog('UPDATE', `Updated last active time for user: ${username}`);
+        try {
+            await user.update({ lastActive: new Date() });
+            debugLog('UPDATE', `Updated last active time for user: ${username}`, {
+                userId,
+                timestamp: new Date()
+            });
+        } catch (error) {
+            debugLog('UPDATE_ERROR', `Failed to update last active time for user: ${username}`, {
+                error: error.message,
+                userId
+            });
+        }
 
         // Start mining session if not already mining
         if (!activeMiningUsers.has(userId)) {
@@ -55,13 +93,25 @@ async function startMining(userId, username) {
                 miningPower: user.miningPower
             };
             activeMiningUsers.set(userId, sessionData);
-            debugLog('MINING', `Started new mining session for user: ${username}`, sessionData);
+            debugLog('MINING_START', `New mining session created for user: ${username}`, {
+                userId,
+                sessionData,
+                timestamp: new Date()
+            });
             return true;
         }
-        debugLog('MINING', `User ${username} is already mining`);
+
+        debugLog('MINING_ACTIVE', `User ${username} already has an active mining session`, {
+            userId,
+            existingSession: activeMiningUsers.get(userId)
+        });
         return false;
     } catch (error) {
-        debugLog('ERROR', `Error in startMining for user ${username}:`, error);
+        debugLog('CRITICAL_ERROR', `Critical error in startMining for user ${username}`, {
+            error: error.message,
+            stack: error.stack,
+            userId
+        });
         return false;
     }
 }
@@ -136,10 +186,19 @@ bot.onText(/\/help/, (msg) => {
 bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
     const username = msg.from.username;
-    debugLog('COMMAND', 'Start command received', msg);
+    debugLog('COMMAND', 'Start command received', {
+        chatId,
+        username,
+        messageData: msg,
+        timestamp: new Date()
+    });
 
     if (!username) {
-        debugLog('ERROR', 'User has no username', msg.from);
+        debugLog('USERNAME_MISSING', 'User has no username set', {
+            chatId,
+            userId: msg.from.id,
+            firstName: msg.from.first_name
+        });
         bot.sendMessage(chatId, 
             '⚠️ Username Required\n\n' +
             'To use SOLPI Mining Bot, you need to set a Telegram username.\n\n' +
@@ -153,24 +212,54 @@ bot.onText(/\/start/, async (msg) => {
         return;
     }
 
-    const started = await startMining(chatId, username);
-    if (started) {
-        bot.sendMessage(chatId, 
-            '🚀 Mining Started Successfully!\n\n' +
-            '💰 Base Rate: 0.005 USDT per minute\n' +
-            `⚡ Your Mining Power: ${activeMiningUsers.get(chatId).miningPower.toFixed(4)}x\n\n` +
-            '📱 Keep this chat open to continue mining\n' +
-            `🌐 Visit https://solpi.onrender.com?u=${encodeURIComponent(username)} to:\n` +
-            '   - Solve captchas for mining boosts\n' +
-            '   - Track your earnings in real-time\n' +
-            '   - Withdraw your USDT\n\n' +
-            'Use /status to check your mining progress'
-        );
-    } else {
-        bot.sendMessage(chatId, 
-            '⚠️ Mining Already Active\n\n' +
-            'You have an active mining session.\n' +
-            'Use /status to check your progress'
+    try {
+        debugLog('START_ATTEMPT', `Attempting to start mining for user: ${username}`, {
+            chatId,
+            timestamp: new Date()
+        });
+
+        const started = await startMining(chatId, username);
+        
+        if (started) {
+            debugLog('START_SUCCESS', `Successfully started mining for user: ${username}`, {
+                chatId,
+                miningPower: activeMiningUsers.get(chatId).miningPower
+            });
+
+            bot.sendMessage(chatId, 
+                '🚀 Mining Started Successfully!\n\n' +
+                '💰 Base Rate: 0.005 USDT per minute\n' +
+                `⚡ Your Mining Power: ${activeMiningUsers.get(chatId).miningPower.toFixed(4)}x\n\n` +
+                '📱 Keep this chat open to continue mining\n' +
+                `🌐 Visit https://solpi.onrender.com?u=${encodeURIComponent(username)} to:\n` +
+                '   - Solve captchas for mining boosts\n' +
+                '   - Track your earnings in real-time\n' +
+                '   - Withdraw your USDT\n\n' +
+                'Use /status to check your mining progress'
+            );
+        } else {
+            debugLog('START_FAILED', `Failed to start mining for user: ${username}`, {
+                chatId,
+                reason: 'Already mining or error occurred'
+            });
+
+            bot.sendMessage(chatId, 
+                '⚠️ Mining Already Active\n\n' +
+                'You have an active mining session.\n' +
+                'Use /status to check your progress'
+            );
+        }
+    } catch (error) {
+        debugLog('START_ERROR', `Error in start command handler for user: ${username}`, {
+            error: error.message,
+            stack: error.stack,
+            chatId
+        });
+
+        bot.sendMessage(chatId,
+            '❌ Error Starting Mining\n\n' +
+            'There was an error starting your mining session.\n' +
+            'Please try again later or contact support.'
         );
     }
 });
@@ -248,12 +337,54 @@ bot.on('error', (error) => {
 
 // Polling error handler
 bot.on('polling_error', (error) => {
-    debugLog('ERROR', 'Polling error:', error);
+    debugLog('POLLING_ERROR', 'Bot polling error occurred', {
+        error: error.message,
+        stack: error.stack,
+        lastPollTime: new Date(lastPollingTime)
+    });
 });
 
-// Connection status check
+// Add connection monitoring
+let lastPollingTime = Date.now();
+const POLLING_TIMEOUT = 30000; // 30 seconds
+
+// Monitor bot connection status
 setInterval(() => {
-    debugLog('HEALTH', `Bot health check - Active sessions: ${activeMiningUsers.size}`);
-}, 300000); // Every 5 minutes
+    const currentTime = Date.now();
+    const timeSinceLastPoll = currentTime - lastPollingTime;
+    
+    debugLog('CONNECTION_STATUS', 'Checking bot connection status', {
+        lastPollTime: new Date(lastPollingTime),
+        currentTime: new Date(currentTime),
+        timeSinceLastPoll: timeSinceLastPoll,
+        isConnected: timeSinceLastPoll < POLLING_TIMEOUT,
+        activeUsers: activeMiningUsers.size
+    });
+
+    if (timeSinceLastPoll > POLLING_TIMEOUT) {
+        debugLog('CONNECTION_WARNING', 'Bot may be disconnected', {
+            lastPollTime: new Date(lastPollingTime),
+            timeSinceLastPoll: timeSinceLastPoll
+        });
+        
+        // Attempt to restart polling
+        try {
+            bot.stopPolling().then(() => {
+                debugLog('RECONNECTION', 'Attempting to restart polling');
+                bot.startPolling();
+            });
+        } catch (error) {
+            debugLog('RECONNECTION_ERROR', 'Failed to restart polling', {
+                error: error.message,
+                stack: error.stack
+            });
+        }
+    }
+}, 30000); // Check every 30 seconds
+
+// Update last polling time on any bot activity
+bot.on('message', () => {
+    lastPollingTime = Date.now();
+});
 
 module.exports = bot; 
