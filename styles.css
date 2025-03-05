@@ -83,7 +83,7 @@ body {
 .wallet-icon {
     width: 24px;
     height: 24px;
-    color: var(--surge-green);
+    margin-right: 8px;
 }
 
 .connect-wallet:hover {
@@ -155,23 +155,24 @@ body {
 }
 
 .calculate-btn {
-    background: linear-gradient(135deg, #2C3E50, #3498DB);
-    border: none;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #2196F3, #1976D2);
     color: white;
+    border: none;
     padding: 8px 16px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 14px;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 }
 
 .calculate-btn:hover {
-    background: linear-gradient(135deg, #34495E, #2980B9);
+    background: linear-gradient(135deg, #1976D2, #2196F3);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .action-buttons {
@@ -181,35 +182,25 @@ body {
 }
 
 .deposit-button, .withdraw-button {
-    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
-    border: 1px solid rgba(0, 255, 163, 0.3);
-    border-radius: 8px;
-    color: #00FFA3;
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
     padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 0.9em;
+    margin: 5px;
+    font-size: 14px;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 }
 
-.deposit-button:hover {
-    background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+.deposit-button:hover, .withdraw-button:hover {
+    background: linear-gradient(135deg, #45a049, #4CAF50);
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 255, 163, 0.2);
-}
-
-.withdraw-button {
-    background: linear-gradient(135deg, #2C3E50, #3498DB);
-    color: white;
-    border: none;
-}
-
-.withdraw-button:hover {
-    background: linear-gradient(135deg, #34495E, #2980B9);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Calculator Modal Styles */
@@ -1903,5 +1894,49 @@ body {
 
     .actual-rate-value {
         font-size: 1.2em;
+    }
+}
+
+.connect-wallet-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.connect-wallet-btn:hover {
+    background: linear-gradient(135deg, #45a049, #4CAF50);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .wallet-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .connect-wallet {
+        padding: 12px;
+    }
+    
+    .connect-wallet-btn {
+        padding: 16px 24px;
+        font-size: 18px;
+    }
+    
+    .connect-wallet-btn .wallet-icon {
+        width: 28px;
+        height: 28px;
     }
 } 

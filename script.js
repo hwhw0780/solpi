@@ -570,7 +570,11 @@ function calculateReturns() {
 
 // Deposit Functions
 function showDepositDialog() {
-    document.getElementById('depositModal').style.display = 'flex';
+    if (!isWalletConnected()) {
+        showConnectWalletDialog();
+        return;
+    }
+    document.getElementById('depositModal').style.display = 'block';
 }
 
 function closeDepositDialog() {
@@ -595,7 +599,11 @@ function confirmDeposit() {
 
 // Withdraw Functions
 function showWithdrawDialog() {
-    document.getElementById('withdrawModal').style.display = 'flex';
+    if (!isWalletConnected()) {
+        showConnectWalletDialog();
+        return;
+    }
+    document.getElementById('withdrawModal').style.display = 'block';
 }
 
 function closeWithdrawDialog() {
@@ -721,4 +729,52 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.connect-wallet').addEventListener('click', () => {
         alert('Wallet connection feature coming soon!');
     });
-}); 
+});
+
+function isWalletConnected() {
+    // This will be replaced with actual wallet connection check
+    return window.walletConnected || false;
+}
+
+function showConnectWalletDialog() {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'connectWalletModal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <span class="close" onclick="closeConnectWalletDialog()">&times;</span>
+            <h3>Connect Wallet</h3>
+            <p>Please connect your wallet to continue.</p>
+            <button class="connect-wallet-btn" onclick="connectWallet()">
+                <svg class="wallet-icon" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="currentColor" d="M19 7h-1V6c0-1.1-.9-2-2-2H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-1h1c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-1 3v6h-1V9h1v1zm-4-3h2v10H4V6h12v1z"/>
+                    <path fill="currentColor" d="M15 11h2v2h-2z"/>
+                </svg>
+                Connect Wallet
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+}
+
+function closeConnectWalletDialog() {
+    const modal = document.getElementById('connectWalletModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.remove();
+    }
+}
+
+function connectWallet() {
+    // This will be replaced with actual wallet connection logic
+    window.walletConnected = true;
+    closeConnectWalletDialog();
+    // Show the original dialog that was attempted
+    const lastAttemptedAction = window.lastAttemptedAction;
+    if (lastAttemptedAction === 'deposit') {
+        showDepositDialog();
+    } else if (lastAttemptedAction === 'withdraw') {
+        showWithdrawDialog();
+    }
+} 

@@ -57,9 +57,9 @@
                                 <div class="rate-unit">USDT/min</div>
                             </div>
                             <div class="staking-info">
-                                <span class="min-stake">Min. Stake: 100,000 SOLPI</span>
+                                <span class="min-stake">Min. Stake: 1,000,000 SOLPI</span>
                                 <button class="calculate-btn" onclick="showCalculator()">
-                                    <span class="button-icon">🧮</span>
+                            
                                     Calculate Returns
                                 </button>
                             </div>
@@ -70,7 +70,7 @@
                                 </button>
                                 <button class="withdraw-button" onclick="showWithdrawDialog()">
                                     <span class="button-icon">💰</span>
-                                    Withdraw USDT (Min Holding 1000000 SPI)
+                                    Withdraw USDT (Min Holding 1,000,000 SPI)
                                 </button>
                             </div>
                         </div>
@@ -251,43 +251,30 @@
             <h2>Roadmap</h2>
             <div class="timeline">
                 <div class="timeline-item">
-                    <h3>Q2 2025: Project Initiation</h3>
+                    <h3>Q2 2025: Initial Launch & Mining Platform</h3>
                     <ul>
-                        <li><strong>Conceptualization & Planning:</strong> Define the vision, mission, and objectives of SOLPI. Develop a detailed project plan outlining timelines, resources, and key deliverables.</li>
-                        <li><strong>Team Formation:</strong> Assemble a skilled team comprising blockchain developers, UI/UX designers, marketing strategists, and community managers.</li>
-                        <li><strong>Whitepaper Development:</strong> Draft a comprehensive whitepaper detailing the technical architecture, tokenomics, use cases, and the unique value proposition of SOLPI.</li>
+                        <li><strong>Pump.fun Launch:</strong> Official launch on Pump.fun platform for initial token raising.</li>
+                        <li><strong>USDT Mining:</strong> Enable users to start mining USDT through our platform.</li>
+                        <li><strong>Early Investment Opportunity:</strong> Early investors can purchase SPI tokens at a discounted rate for staking purposes.</li>
+                        <li><strong>Staking Platform:</strong> Implementation of the initial staking mechanism for SPI token holders.</li>
                     </ul>
                 </div>
                 <div class="timeline-item">
-                    <h3>Q3 2025: Development Phase</h3>
+                    <h3>Q3 2025: Wallet Integration & Staking Enhancement</h3>
                     <ul>
-                        <li><strong>Telegram Integration:</strong> Develop and integrate the SOLPI mining bot within Telegram, enabling users to mine SPI by keeping the app active and solving Captchas.</li>
-                        <li><strong>Smart Contract Deployment:</strong> Deploy secure and efficient smart contracts on the Solana blockchain to manage token issuance, transactions, and reward distributions.</li>
-                        <li><strong>User Interface Design:</strong> Create an intuitive and user-friendly interface for the Telegram bot, ensuring seamless interaction and engagement.</li>
+                        <li><strong>Wallet Connect Integration:</strong> Implementation of wallet connection feature for early SPI investors.</li>
+                        <li><strong>Staking Platform Enhancement:</strong> Enable SPI token deposits for staking purposes.</li>
+                        <li><strong>USDT Withdrawal System:</strong> Implement secure USDT withdrawal mechanism for stakers.</li>
+                        <li><strong>Platform Security Audit:</strong> Comprehensive security audit of the staking and withdrawal systems.</li>
                     </ul>
                 </div>
                 <div class="timeline-item">
-                    <h3>Q4 2025: Pre-Launch and Community Building</h3>
+                    <h3>Q4 2025: Exchange Listings & Expansion</h3>
                     <ul>
-                        <li><strong>Pump.fun Pre-Launch:</strong> Initiate the token distribution through a bonding curve model on Pump.fun, allowing early adopters to acquire SPI tokens.</li>
-                        <li><strong>Community Engagement:</strong> Launch social media channels, forums, and community events to build a robust and engaged user base.</li>
-                        <li><strong>Educational Campaigns:</strong> Conduct webinars, tutorials, and AMAs to educate the community about SOLPI's features, benefits, and mining mechanisms.</li>
-                    </ul>
-                </div>
-                <div class="timeline-item">
-                    <h3>Q1 2026: Official Launch</h3>
-                    <ul>
-                        <li><strong>Mainnet Launch:</strong> Transition from testnet to mainnet, enabling full functionality of SOLPI's features on the Solana blockchain.</li>
-                        <li><strong>Marketing Campaign:</strong> Implement targeted marketing strategies to increase brand awareness and attract a broader audience.</li>
-                        <li><strong>Partnerships:</strong> Establish collaborations with AI and blockchain projects to enhance the utility and reach of SOLPI.</li>
-                    </ul>
-                </div>
-                <div class="timeline-item">
-                    <h3>Q2 2026: Expansion and Enhancement</h3>
-                    <ul>
-                        <li><strong>Feature Upgrades:</strong> Introduce additional functionalities based on user feedback, such as staking, governance mechanisms, or NFT integrations.</li>
-                        <li><strong>Global Outreach:</strong> Expand marketing efforts to international markets, focusing on regions with high cryptocurrency adoption.</li>
-                        <li><strong>Continuous Improvement:</strong> Regularly update the platform to improve security, scalability, and user experience.</li>
+                        <li><strong>CEX Listings:</strong> Strategic listings on major centralized exchanges.</li>
+                        <li><strong>DEX Integration:</strong> Launch on decentralized exchanges for increased liquidity.</li>
+                        <li><strong>Market Making:</strong> Implementation of professional market making strategies.</li>
+                        <li><strong>Global Expansion:</strong> Expansion of user base through strategic exchange partnerships.</li>
                     </ul>
                 </div>
             </div>
@@ -340,7 +327,12 @@
 
                 <h4>3.2 Mining Formula</h4>
                 <p>The mining rate (R) is calculated as:</p>
-                <div class="formula">R = (Base Rate × Time Active × Boost Multiplier) + (Captcha Bonus × Difficulty)</div>
+                <div class="formula">R = Base Rate × Mining Power</div>
+                <p>Where:</p>
+                <ul>
+                    <li>Base Rate = 0.005 USDT/minute</li>
+                    <li>Mining Power = User's current mining multiplier (starts at 1.0x)</li>
+                </ul>
             </div>
 
             <div class="whitepaper-section">
