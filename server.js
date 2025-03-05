@@ -87,20 +87,30 @@ async function startServer() {
         let connected = false;
         let retries = 5;
         
-        while (!retries > 0) {
+        while (!connected && retries > 0) {
             try {
+                serverLog('DATABASE', `Attempting database connection (${retries} attempts remaining)`);
                 await sequelize.authenticate();
                 serverLog('DATABASE', 'Connection established successfully');
                 connected = true;
-                break;
+
+                // Sync database
+                serverLog('DATABASE', 'Attempting to sync database tables');
+                await sequelize.sync();
+                serverLog('DATABASE', 'Database synced successfully');
             } catch (error) {
                 serverLog('DATABASE_ERROR', 'Connection attempt failed', {
                     error: error.message,
+                    code: error.original?.code,
+                    detail: error.original?.detail,
                     retriesLeft: retries
                 });
+
                 retries--;
                 if (retries > 0) {
-                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    const delay = (6 - retries) * 5000; // Increasing delay with each retry
+                    serverLog('DATABASE', `Waiting ${delay/1000} seconds before next attempt`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
                 }
             }
         }
@@ -108,10 +118,6 @@ async function startServer() {
         if (!connected) {
             throw new Error('Could not connect to the database after multiple attempts');
         }
-
-        // Sync database
-        await sequelize.sync();
-        serverLog('DATABASE', 'Database synced successfully');
 
         // Start Express server
         app.listen(PORT, () => {
@@ -121,10 +127,32 @@ async function startServer() {
     } catch (error) {
         serverLog('FATAL', 'Error starting server', {
             error: error.message,
-            stack: error.stack
+            stack: error.stack,
+            type: error.constructor.name
         });
+        
+        // Wait a bit before exiting to ensure logs are written
+        await new Promise(resolve => setTimeout(resolve, 1000));
         process.exit(1);
     }
 }
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+    serverLog('UNCAUGHT_EXCEPTION', 'An uncaught exception occurred', {
+        error: error.message,
+        stack: error.stack,
+        type: error.constructor.name
+    });
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+    serverLog('UNHANDLED_REJECTION', 'An unhandled promise rejection occurred', {
+        reason: reason?.message || reason,
+        stack: reason?.stack,
+        type: reason?.constructor.name
+    });
+});
 
 startServer(); 

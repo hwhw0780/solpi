@@ -11,13 +11,14 @@ function dbLog(context, message, data = null) {
 
 dbLog('CONFIG', 'Initializing database with URL', { url: process.env.DATABASE_URL });
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const config = {
     dialect: 'postgres',
     dialectOptions: {
         ssl: {
             require: true,
             rejectUnauthorized: false
-        }
+        },
+        connectTimeout: 60000
     },
     pool: {
         max: 5,
@@ -25,8 +26,16 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
         acquire: 120000,
         idle: 20000
     },
-    logging: (msg) => dbLog('QUERY', msg)
-});
+    logging: (msg) => dbLog('QUERY', msg),
+    retry: {
+        max: 5,
+        backoffBase: 1000,
+        backoffExponent: 1.5
+    }
+};
+
+dbLog('CONFIG', 'Database configuration', config);
+const sequelize = new Sequelize(process.env.DATABASE_URL, config);
 
 // Test the connection with retry logic
 async function testConnection() {
@@ -36,27 +45,14 @@ async function testConnection() {
             dbLog('CONNECT', `Attempting to connect to database (${retries} attempts remaining)`);
             await sequelize.authenticate();
             dbLog('SUCCESS', 'Database connection established successfully');
-            
-            // Sync database tables
-            dbLog('SYNC', 'Attempting to sync database tables');
-            await sequelize.sync();
-            dbLog('SYNC', 'Database tables synced successfully');
-            
             return true;
         } catch (err) {
             dbLog('ERROR', 'Connection attempt failed', {
                 error: err.message,
                 code: err.parent?.code,
-                detail: err.parent?.detail
+                detail: err.parent?.detail,
+                retries: retries
             });
-            
-            if (err.original) {
-                dbLog('ERROR_DETAIL', 'Original error details', {
-                    code: err.original.code,
-                    detail: err.original.detail,
-                    where: err.original.where
-                });
-            }
             
             retries -= 1;
             if (retries === 0) {
@@ -64,7 +60,7 @@ async function testConnection() {
                 return false;
             }
             
-            const delay = (11 - retries) * 10000;
+            const delay = Math.min(1000 * Math.pow(2, 10 - retries), 30000);
             dbLog('RETRY', `Waiting ${delay/1000} seconds before next attempt`);
             await new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -81,11 +77,26 @@ async function testConnection() {
             dbLog('FATAL', 'Could not establish initial database connection');
             process.exit(1);
         }
+        
+        // Sync database tables
+        try {
+            dbLog('SYNC', 'Attempting to sync database tables');
+            await sequelize.sync();
+            dbLog('SYNC', 'Database tables synced successfully');
+        } catch (error) {
+            dbLog('SYNC_ERROR', 'Failed to sync database tables', {
+                error: error.message,
+                type: error.constructor.name
+            });
+            process.exit(1);
+        }
+        
         dbLog('READY', 'Database is fully initialized and ready');
     } catch (err) {
         dbLog('FATAL', 'Unexpected error during initialization', {
             error: err.message,
-            stack: err.stack
+            stack: err.stack,
+            type: err.constructor.name
         });
         process.exit(1);
     }
@@ -99,7 +110,8 @@ async function checkConnection() {
     } catch (error) {
         dbLog('CHECK', 'Connection check failed', {
             error: error.message,
-            timestamp: new Date()
+            timestamp: new Date(),
+            type: error.constructor.name
         });
         return false;
     }
