@@ -21,6 +21,55 @@ debugLog('BOT', 'Telegram bot initialized with polling');
 // Store active mining sessions
 const activeMiningUsers = new Map();
 
+// Function to calculate and save mining progress
+async function updateMiningProgress() {
+    try {
+        debugLog('UPDATE_PROGRESS', `Updating mining progress for ${activeMiningUsers.size} active users`);
+        
+        for (const [userId, session] of activeMiningUsers.entries()) {
+            try {
+                const miningDuration = (Date.now() - session.startTime) / 1000 / 60; // Duration in minutes
+                const baseRate = 0.005; // Base rate in USDT per minute
+                const earnings = baseRate * miningDuration * session.miningPower;
+
+                // Get user from database
+                const user = await User.findOne({ where: { telegramUsername: session.username } });
+                if (user) {
+                    // Update total mined amount
+                    await user.update({
+                        totalMined: user.totalMined + earnings,
+                        lastActive: new Date()
+                    });
+
+                    // Reset session start time to avoid double counting
+                    session.startTime = Date.now();
+                    activeMiningUsers.set(userId, session);
+
+                    debugLog('PROGRESS_SAVED', `Updated mining progress for user: ${session.username}`, {
+                        userId,
+                        earnings,
+                        newTotal: user.totalMined + earnings,
+                        timestamp: new Date()
+                    });
+                }
+            } catch (error) {
+                debugLog('UPDATE_ERROR', `Failed to update progress for user: ${session.username}`, {
+                    error: error.message,
+                    userId
+                });
+            }
+        }
+    } catch (error) {
+        debugLog('UPDATE_PROGRESS_ERROR', 'Error updating mining progress', {
+            error: error.message,
+            stack: error.stack
+        });
+    }
+}
+
+// Update mining progress every minute
+setInterval(updateMiningProgress, 60000);
+
 // Check database connection before processing commands
 async function ensureDatabaseConnection(chatId) {
     try {
@@ -156,36 +205,17 @@ async function stopMining(userId) {
             return null;
         }
 
-        const miningDuration = (Date.now() - session.startTime) / 1000 / 60; // Duration in minutes
-        const baseRate = 0.005; // Base rate in USDT per minute
-        const earnings = baseRate * miningDuration * session.miningPower;
-
-        debugLog('EARNINGS', `Calculating earnings for user: ${session.username}`, {
-            duration: miningDuration,
-            baseRate,
-            miningPower: session.miningPower,
-            earnings
-        });
-
-        // Update user's total mined amount in database
-        const user = await User.findOne({ where: { telegramUsername: session.username } });
-        if (user) {
-            await user.update({
-                totalMined: user.totalMined + earnings,
-                lastActive: new Date()
-            });
-            debugLog('DATABASE', `Updated total mined amount for user: ${session.username}`, {
-                previousTotal: user.totalMined,
-                newTotal: user.totalMined + earnings
-            });
-        }
+        // Save final progress before stopping
+        await updateMiningProgress();
 
         activeMiningUsers.delete(userId);
         debugLog('MINING', `Removed mining session for user: ${session.username}`);
 
+        // Get final totals from database
+        const user = await User.findOne({ where: { telegramUsername: session.username } });
         return {
-            duration: miningDuration,
-            earnings: earnings
+            duration: (Date.now() - session.startTime) / 1000 / 60,
+            totalMined: user ? user.totalMined : 0
         };
     } catch (error) {
         debugLog('ERROR', `Error in stopMining for userId ${userId}:`, error);
