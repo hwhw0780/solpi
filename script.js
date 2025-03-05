@@ -539,12 +539,15 @@ function updateMiningRate() {
 
 // Update all displays
 function updateDisplays() {
-    document.getElementById('total-mined').textContent = totalMined.toFixed(4) + ' USDT';
-    document.getElementById('staked-amount').textContent = stakedAmount.toLocaleString() + ' SOLPI';
-    document.getElementById('mining-rate').textContent = (0.0025).toFixed(4);
-    document.getElementById('mining-power').textContent = miningPower.toFixed(4) + 'x';
-    document.getElementById('solpiBalance').textContent = '0 SOLPI';
-    document.getElementById('usdtBalance').textContent = totalMined.toFixed(4) + ' USDT';
+    const totalMined = document.getElementById('total-mined');
+    const miningRate = document.getElementById('mining-rate');
+    const actualMiningRate = document.getElementById('actual-mining-rate');
+    const miningPower = document.getElementById('mining-power');
+
+    if (totalMined) totalMined.textContent = `${parseFloat(totalMined).toFixed(4)} USDT`;
+    if (miningRate) miningRate.textContent = (0.0025).toFixed(4);
+    if (actualMiningRate) actualMiningRate.textContent = (0.0025 * miningPower).toFixed(4);
+    if (miningPower) miningPower.textContent = `${miningPower.toFixed(4)}x`;
 }
 
 // Calculator Functions
@@ -659,12 +662,14 @@ async function loadUserData(username) {
     try {
         const response = await fetch(`/api/user/${username}`);
         if (response.ok) {
-            const userData = await response.json();
-            totalMined = parseFloat(userData.totalMined) || 0;
-            miningPower = parseFloat(userData.miningPower) || 1.0;
-            localStorage.setItem('totalMined', totalMined.toString());
-            localStorage.setItem('miningPower', miningPower.toString());
+            const data = await response.json();
+            userData = {
+                ...data,
+                miningPower: parseFloat(data.miningPower.toFixed(4))
+            };
             updateDisplays();
+        } else {
+            console.error('Failed to load user data');
         }
     } catch (error) {
         console.error('Error loading user data:', error);

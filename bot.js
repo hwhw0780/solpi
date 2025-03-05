@@ -130,7 +130,7 @@ async function startMining(userId, username) {
                     telegramUsername: username,
                     registrationDate: new Date(),
                     lastActive: new Date(),
-                    miningPower: 1.0,
+                    miningPower: 1.0000,
                     totalMined: 0,
                     status: 'active'
                 });
@@ -147,12 +147,6 @@ async function startMining(userId, username) {
                 });
                 throw error;
             }
-        } else {
-            debugLog('USER_FOUND', `Existing user found: ${username}`, {
-                userId,
-                lastActive: user.lastActive,
-                miningPower: user.miningPower
-            });
         }
 
         // Update last active time
@@ -174,7 +168,7 @@ async function startMining(userId, username) {
             const sessionData = {
                 username,
                 startTime: Date.now(),
-                miningPower: user.miningPower
+                miningPower: parseFloat(user.miningPower.toFixed(4))
             };
             activeMiningUsers.set(userId, sessionData);
             debugLog('MINING_START', `New mining session created for user: ${username}`, {
@@ -182,6 +176,18 @@ async function startMining(userId, username) {
                 sessionData,
                 timestamp: new Date()
             });
+
+            bot.sendMessage(userId, 
+                '🚀 Mining Started Successfully!\n\n' +
+                '💰 Base Rate: 0.0025 USDT per minute\n' +
+                `⚡ Your Mining Power: ${user.miningPower.toFixed(4)}x\n\n` +
+                '📈 Boost your earnings:\n' +
+                '- Solve captchas to increase mining power by 0.025x\n' +
+                '- Boosts available every 2 hours\n\n' +
+                '📱 Keep this chat open to continue mining\n' +
+                '💡 Use /open to access your mining dashboard\n' +
+                'Use /status to check your mining progress'
+            );
             return true;
         }
 
@@ -389,14 +395,14 @@ bot.onText(/\/status/, async (msg) => {
             const session = activeMiningUsers.get(chatId);
             const miningStatus = session ? '🟢 Currently Mining' : '🔴 Not Mining';
             const currentEarnings = session ? 
-                ((Date.now() - session.startTime) / 1000 / 60 * 0.0025 * session.miningPower).toFixed(3) : 
-                '0.000';
+                ((Date.now() - session.startTime) / 1000 / 60 * 0.0025 * session.miningPower).toFixed(4) : 
+                '0.0000';
 
             bot.sendMessage(chatId,
                 '📊 Mining Status Report\n\n' +
                 `Status: ${miningStatus}\n` +
                 `⚡ Mining Power: ${user.miningPower.toFixed(4)}x\n` +
-                `💰 Total Mined: ${user.totalMined.toFixed(3)} USDT\n` +
+                `💰 Total Mined: ${user.totalMined.toFixed(4)} USDT\n` +
                 `📈 Current Session: ${currentEarnings} USDT\n\n` +
                 'Available Commands:\n' +
                 '/start - Start mining\n' +
