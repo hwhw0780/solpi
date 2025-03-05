@@ -26,6 +26,20 @@ app.use(express.static('public'));
 // Serve static files from root directory
 app.use(express.static(path.join(__dirname)));
 
+// Webhook endpoint for Telegram bot
+app.post(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`, (req, res) => {
+    try {
+        bot.handleUpdate(req.body);
+        res.sendStatus(200);
+    } catch (error) {
+        serverLog('WEBHOOK_ERROR', 'Error handling webhook update', {
+            error: error.message,
+            body: req.body
+        });
+        res.sendStatus(500);
+    }
+});
+
 // API routes for user data
 app.get('/api/users', async (req, res) => {
     try {

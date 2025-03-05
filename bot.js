@@ -14,18 +14,14 @@ function debugLog(context, message, data = null) {
 // Bot configuration
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const options = {
-    polling: {
-        interval: 300,
-        autoStart: false,
-        params: {
-            timeout: 10
-        }
+    webHook: {
+        port: process.env.PORT || 3000
     }
 };
 
 // Create a bot instance
 const bot = new TelegramBot(token, options);
-debugLog('BOT', 'Telegram bot instance created with polling disabled');
+debugLog('BOT', 'Telegram bot instance created with webhook mode');
 
 // Store active mining sessions
 const activeMiningUsers = new Map();
@@ -436,73 +432,21 @@ bot.on('message', (msg) => {
     }
 });
 
-// Error handler
-bot.on('error', (error) => {
-    debugLog('ERROR', 'Telegram bot error:', error);
-});
-
-// Polling error handler
-bot.on('polling_error', (error) => {
-    debugLog('POLLING_ERROR', 'Bot polling error occurred', {
-        error: error.message,
-        stack: error.stack,
-        lastPollTime: new Date(lastPollingTime)
-    });
-});
-
-// Modified connection monitoring
-let lastPollingTime = Date.now();
-const POLLING_TIMEOUT = 30000;
-
-// Monitor bot connection status with improved recovery
-const connectionMonitor = setInterval(async () => {
-    const currentTime = Date.now();
-    const timeSinceLastPoll = currentTime - lastPollingTime;
-    
-    debugLog('CONNECTION_STATUS', 'Checking bot connection status', {
-        lastPollTime: new Date(lastPollingTime),
-        currentTime: new Date(currentTime),
-        timeSinceLastPoll: timeSinceLastPoll,
-        isConnected: timeSinceLastPoll < POLLING_TIMEOUT,
-        activeUsers: activeMiningUsers.size
-    });
-
-    if (timeSinceLastPoll > POLLING_TIMEOUT) {
-        debugLog('CONNECTION_WARNING', 'Bot disconnected, attempting recovery');
-        
-        try {
-            await bot.stopPolling();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            await bot.deleteWebHook();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            await bot.startPolling({ restart: true });
-            
-            lastPollingTime = Date.now();
-            debugLog('RECOVERY', 'Bot recovery successful');
-        } catch (error) {
-            debugLog('RECOVERY_ERROR', 'Failed to recover bot connection', {
-                error: error.message,
-                stack: error.stack
-            });
-        }
-    }
-}, 30000);
-
-// Initialize the bot
+// Initialize bot with webhook
 async function initializeBot() {
     try {
         debugLog('INIT', 'Starting bot initialization');
         
-        // Stop any existing polling
-        await bot.stopPolling();
+        // Get public URL from environment
+        const url = process.env.PUBLIC_URL || 'https://solpi.onrender.com';
+        const webhookPath = `/webhook/${token}`;
         
-        // Clear webhook to ensure clean start
+        // Remove any existing webhook
         await bot.deleteWebHook();
         
-        // Start polling with error handling
-        await bot.startPolling({ restart: true });
-        
-        debugLog('INIT', 'Bot successfully initialized and polling started');
+        // Set the webhook
+        await bot.setWebHook(`${url}${webhookPath}`);
+        debugLog('WEBHOOK', `Webhook set to: ${url}${webhookPath}`);
         
         // Set up cleanup on process termination
         process.on('SIGTERM', cleanup);
@@ -525,12 +469,10 @@ async function cleanup() {
         // Save final mining progress
         await updateMiningProgress();
         
-        // Stop polling
-        await bot.stopPolling();
+        // Remove webhook
+        await bot.deleteWebHook();
         
         debugLog('CLEANUP', 'Bot cleanup completed successfully');
-        
-        // Exit after cleanup
         process.exit(0);
     } catch (error) {
         debugLog('CLEANUP_ERROR', 'Error during cleanup', {
@@ -549,10 +491,39 @@ initializeBot().then(success => {
     }
 });
 
-// Update last polling time on any bot activity
-bot.on('message', () => {
-    lastPollingTime = Date.now();
+// Error handler
+bot.on('error', (error) => {
+    debugLog('ERROR', 'Telegram bot error:', error);
 });
+
+// Webhook error handler
+bot.on('webhook_error', (error) => {
+    debugLog('WEBHOOK_ERROR', 'Webhook error occurred', {
+        error: error.message,
+        stack: error.stack
+    });
+});
+
+// Add periodic health check
+setInterval(async () => {
+    try {
+        const webhookInfo = await bot.getWebHookInfo();
+        debugLog('HEALTH_CHECK', 'Webhook status', {
+            url: webhookInfo.url,
+            hasCustomCertificate: webhookInfo.has_custom_certificate,
+            pendingUpdateCount: webhookInfo.pending_update_count,
+            lastErrorDate: webhookInfo.last_error_date,
+            lastErrorMessage: webhookInfo.last_error_message,
+            maxConnections: webhookInfo.max_connections,
+            timestamp: new Date()
+        });
+    } catch (error) {
+        debugLog('HEALTH_CHECK_ERROR', 'Failed to get webhook info', {
+            error: error.message,
+            stack: error.stack
+        });
+    }
+}, 60000);
 
 // Export the bot instance
 module.exports = bot; 
