@@ -2,9 +2,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const { User } = require('./models/user');
 const { checkConnection } = require('./models/db');
 
-// Replace with your bot token
-const token = process.env.TELEGRAM_BOT_TOKEN;
-
 // Debug logging function
 function debugLog(context, message, data = null) {
     const timestamp = new Date().toISOString();
@@ -14,9 +11,21 @@ function debugLog(context, message, data = null) {
     }
 }
 
+// Bot configuration
+const token = process.env.TELEGRAM_BOT_TOKEN;
+const options = {
+    polling: {
+        interval: 300,
+        autoStart: false,
+        params: {
+            timeout: 10
+        }
+    }
+};
+
 // Create a bot instance
-const bot = new TelegramBot(token, { polling: true });
-debugLog('BOT', 'Telegram bot initialized with polling');
+const bot = new TelegramBot(token, options);
+debugLog('BOT', 'Telegram bot instance created with polling disabled');
 
 // Store active mining sessions
 const activeMiningUsers = new Map();
@@ -441,12 +450,12 @@ bot.on('polling_error', (error) => {
     });
 });
 
-// Add connection monitoring
+// Modified connection monitoring
 let lastPollingTime = Date.now();
-const POLLING_TIMEOUT = 30000; // 30 seconds
+const POLLING_TIMEOUT = 30000;
 
-// Monitor bot connection status
-setInterval(() => {
+// Monitor bot connection status with improved recovery
+const connectionMonitor = setInterval(async () => {
     const currentTime = Date.now();
     const timeSinceLastPoll = currentTime - lastPollingTime;
     
@@ -459,39 +468,91 @@ setInterval(() => {
     });
 
     if (timeSinceLastPoll > POLLING_TIMEOUT) {
-        debugLog('CONNECTION_WARNING', 'Bot may be disconnected', {
-            lastPollTime: new Date(lastPollingTime),
-            timeSinceLastPoll: timeSinceLastPoll
-        });
+        debugLog('CONNECTION_WARNING', 'Bot disconnected, attempting recovery');
         
-        // Attempt to restart polling
         try {
-            bot.stopPolling().then(() => {
-                debugLog('RECONNECTION', 'Attempting to restart polling');
-                bot.startPolling();
-            });
+            await bot.stopPolling();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await bot.deleteWebHook();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await bot.startPolling({ restart: true });
+            
+            lastPollingTime = Date.now();
+            debugLog('RECOVERY', 'Bot recovery successful');
         } catch (error) {
-            debugLog('RECONNECTION_ERROR', 'Failed to restart polling', {
+            debugLog('RECOVERY_ERROR', 'Failed to recover bot connection', {
                 error: error.message,
                 stack: error.stack
             });
         }
     }
-}, 30000); // Check every 30 seconds
+}, 30000);
+
+// Initialize the bot
+async function initializeBot() {
+    try {
+        debugLog('INIT', 'Starting bot initialization');
+        
+        // Stop any existing polling
+        await bot.stopPolling();
+        
+        // Clear webhook to ensure clean start
+        await bot.deleteWebHook();
+        
+        // Start polling with error handling
+        await bot.startPolling({ restart: true });
+        
+        debugLog('INIT', 'Bot successfully initialized and polling started');
+        
+        // Set up cleanup on process termination
+        process.on('SIGTERM', cleanup);
+        process.on('SIGINT', cleanup);
+        
+        return true;
+    } catch (error) {
+        debugLog('INIT_ERROR', 'Failed to initialize bot', {
+            error: error.message,
+            stack: error.stack
+        });
+        return false;
+    }
+}
+
+// Cleanup function for graceful shutdown
+async function cleanup() {
+    debugLog('CLEANUP', 'Starting bot cleanup process');
+    try {
+        // Save final mining progress
+        await updateMiningProgress();
+        
+        // Stop polling
+        await bot.stopPolling();
+        
+        debugLog('CLEANUP', 'Bot cleanup completed successfully');
+        
+        // Exit after cleanup
+        process.exit(0);
+    } catch (error) {
+        debugLog('CLEANUP_ERROR', 'Error during cleanup', {
+            error: error.message,
+            stack: error.stack
+        });
+        process.exit(1);
+    }
+}
+
+// Initialize the bot
+initializeBot().then(success => {
+    if (!success) {
+        debugLog('FATAL', 'Bot initialization failed');
+        process.exit(1);
+    }
+});
 
 // Update last polling time on any bot activity
 bot.on('message', () => {
     lastPollingTime = Date.now();
 });
 
-// Add periodic database connection check
-setInterval(async () => {
-    const isConnected = await checkConnection();
-    debugLog('DB_CHECK', 'Periodic database connection check', {
-        isConnected,
-        timestamp: new Date(),
-        activeUsers: activeMiningUsers.size
-    });
-}, 60000); // Check every minute
-
+// Export the bot instance
 module.exports = bot; 
