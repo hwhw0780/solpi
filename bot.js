@@ -223,6 +223,35 @@ async function stopMining(userId) {
     }
 }
 
+// Function to send dashboard button
+function sendDashboardButton(chatId, username) {
+    const button = {
+        reply_markup: {
+            inline_keyboard: [[
+                {
+                    text: '🌐 Open Mining Dashboard',
+                    url: `https://solpi.onrender.com?u=${encodeURIComponent(username)}`
+                }
+            ]]
+        }
+    };
+    bot.sendMessage(chatId, '📱 Click below to access your mining dashboard:', button);
+}
+
+// Open command handler
+bot.onText(/\/open/, (msg) => {
+    const chatId = msg.chat.id;
+    const username = msg.from.username;
+    debugLog('COMMAND', 'Open command received', { chatId, username });
+    
+    if (!username) {
+        bot.sendMessage(chatId, '⚠️ You need to set a Telegram username first!');
+        return;
+    }
+    
+    sendDashboardButton(chatId, username);
+});
+
 // Welcome message handler
 bot.onText(/\/help/, (msg) => {
     const chatId = msg.chat.id;
@@ -233,11 +262,12 @@ bot.onText(/\/help/, (msg) => {
         'Available commands:\n' +
         '/start - Start mining USDT\n' +
         '/status - Check your mining status\n' +
+        '/open - Open mining dashboard\n' +
         '/help - Show this help message\n\n' +
         '💡 Tips:\n' +
         '- Keep this chat open to continue mining\n' +
-        '- Solve captchas on our website to boost your mining power\n' +
-        '- Visit https://solpi.onrender.com to check your earnings'
+        '- Solve captchas on the dashboard to boost your mining power\n' +
+        '- Track your earnings and withdraw USDT from the dashboard'
     );
 });
 
@@ -295,10 +325,7 @@ bot.onText(/\/start/, async (msg) => {
                 '💰 Base Rate: 0.005 USDT per minute\n' +
                 `⚡ Your Mining Power: ${activeMiningUsers.get(chatId).miningPower.toFixed(4)}x\n\n` +
                 '📱 Keep this chat open to continue mining\n' +
-                `🌐 Visit https://solpi.onrender.com?u=${encodeURIComponent(username)} to:\n` +
-                '   - Solve captchas for mining boosts\n' +
-                '   - Track your earnings in real-time\n' +
-                '   - Withdraw your USDT\n\n' +
+                '💡 Use /open to access your mining dashboard\n' +
                 'Use /status to check your mining progress'
             );
         } else {
@@ -360,12 +387,9 @@ bot.onText(/\/status/, async (msg) => {
                 `⚡ Mining Power: ${user.miningPower.toFixed(4)}x\n` +
                 `💰 Total Mined: ${user.totalMined.toFixed(3)} USDT\n` +
                 `📈 Current Session: ${currentEarnings} USDT\n\n` +
-                `🌐 Visit https://solpi.onrender.com?u=${encodeURIComponent(username)} to:\n` +
-                '   - Boost your mining power\n' +
-                '   - Track earnings in real-time\n' +
-                '   - Withdraw your USDT\n\n' +
                 'Available Commands:\n' +
                 '/start - Start mining\n' +
+                '/open - Open mining dashboard\n' +
                 '/help - Show all commands'
             );
         } else {
@@ -390,7 +414,7 @@ bot.onText(/\/status/, async (msg) => {
 bot.on('message', (msg) => {
     if (msg.text && msg.text.startsWith('/')) {
         const command = msg.text.split(' ')[0];
-        if (!['/start', '/status', '/help'].includes(command)) {
+        if (!['/start', '/status', '/help', '/open'].includes(command)) {
             debugLog('COMMAND', `Unknown command received: ${command}`, msg);
             bot.sendMessage(msg.chat.id,
                 '❓ Unknown Command\n\n' +
