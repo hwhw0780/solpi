@@ -772,4 +772,16 @@ function connectWallet() {
     // Show coming soon message
     alert('Wallet Features coming soon!');
     closeConnectWalletDialog();
+}
+
+function scrollToMiningPower() {
+    const miningPowerSection = document.querySelector('.stat-card:has(#mining-power)');
+    if (miningPowerSection) {
+        miningPowerSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Add a highlight effect
+        miningPowerSection.classList.add('highlight-section');
+        setTimeout(() => {
+            miningPowerSection.classList.remove('highlight-section');
+        }, 2000);
+    }
 } 
