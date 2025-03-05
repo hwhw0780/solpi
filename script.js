@@ -104,12 +104,19 @@ let currentCaptchaType = '';
 
 // Mining Functions
 const updateTotalMined = () => {
-    const miningRate = BASE_MINING_RATE * miningPower;
-    totalMined += miningRate;
-    localStorage.setItem('totalMined', totalMined.toString());
-    document.getElementById('mining-rate').textContent = (0.0025).toFixed(3);
-    document.getElementById('actual-mining-rate').textContent = miningRate.toFixed(3);
-    document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
+    const totalMined = document.getElementById('total-mined');
+    const miningRate = document.getElementById('mining-rate');
+    const actualMiningRate = document.getElementById('actual-mining-rate');
+    
+    if (totalMined) {
+        totalMined.textContent = `${parseFloat(totalMined).toFixed(4)} USDT`;
+    }
+    if (miningRate) {
+        miningRate.textContent = (0.0025).toFixed(4);
+    }
+    if (actualMiningRate) {
+        actualMiningRate.textContent = (0.0025).toFixed(4);
+    }
 };
 
 // Enhanced Particle Animation
@@ -459,11 +466,11 @@ document.addEventListener('DOMContentLoaded', () => {
     miningPowerElement.textContent = miningPower.toFixed(4) + 'x';
     
     // Initialize mining rate display with fixed base rate
-    document.getElementById('mining-rate').textContent = (0.0025).toFixed(3);
+    document.getElementById('mining-rate').textContent = (0.0025).toFixed(4);
     
     // Initialize actual mining rate display
     const actualRate = BASE_MINING_RATE * miningPower;
-    document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(3);
+    document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(4);
     
     // Initialize mining update interval
     setInterval(updateTotalMined, 60000);
@@ -523,21 +530,21 @@ function updateMining() {
 // Update mining rate
 function updateMiningRate() {
     // Display base rate (always 0.0025)
-    document.getElementById('mining-rate').textContent = (0.0025).toFixed(3);
+    document.getElementById('mining-rate').textContent = (0.0025).toFixed(4);
     
     // Calculate and display actual mining rate with multipliers
     const actualRate = BASE_MINING_RATE * miningPower;
-    document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(3);
+    document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(4);
 }
 
 // Update all displays
 function updateDisplays() {
-    document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
+    document.getElementById('total-mined').textContent = totalMined.toFixed(4) + ' USDT';
     document.getElementById('staked-amount').textContent = stakedAmount.toLocaleString() + ' SOLPI';
-    document.getElementById('mining-rate').textContent = (0.0025).toFixed(3);
+    document.getElementById('mining-rate').textContent = (0.0025).toFixed(4);
     document.getElementById('mining-power').textContent = miningPower.toFixed(4) + 'x';
     document.getElementById('solpiBalance').textContent = '0 SOLPI';
-    document.getElementById('usdtBalance').textContent = totalMined.toFixed(3) + ' USDT';
+    document.getElementById('usdtBalance').textContent = totalMined.toFixed(4) + ' USDT';
 }
 
 // Calculator Functions
@@ -561,11 +568,11 @@ function calculateReturns() {
     const dailyRate = totalRate * 60 * 24;
 
     document.getElementById('baseRateAddition').textContent = 
-        baseRateAddition.toFixed(3) + ' USDT';
+        baseRateAddition.toFixed(4) + ' USDT';
     document.getElementById('usdtPerMinute').textContent = 
-        totalRate.toFixed(3) + ' USDT';
+        totalRate.toFixed(4) + ' USDT';
     document.getElementById('usdtPerDay').textContent = 
-        dailyRate.toFixed(3) + ' USDT';
+        dailyRate.toFixed(4) + ' USDT';
 }
 
 // Deposit Functions

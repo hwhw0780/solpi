@@ -327,39 +327,51 @@ body {
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-    .action-buttons {
-        flex-direction: column;
+    .header {
+        padding: 15px;
+        margin-bottom: 20px;
+        justify-content: space-between;
+    }
+
+    .logo-container {
+        position: relative;
+        transform: none;
+        order: 0;
+        margin: 0;
+    }
+
+    .main-logo {
+        height: 45px;
+    }
+
+    .header-buttons {
+        flex-wrap: nowrap;
+        justify-content: flex-end;
         gap: 10px;
     }
 
-    .deposit-button, .withdraw-button {
-        width: 100%;
+    .username {
+        font-size: 14px;
+        padding: 6px 12px;
     }
 
-    .calculator-content, .deposit-content, .withdraw-content {
-        width: 90%;
-        margin: 20px auto;
+    .connect-wallet {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
     }
 
     .wallet-icon {
         width: 56px;
         height: 56px;
     }
-    
-    .connect-wallet {
-        padding: 12px;
-    }
-    
-    .connect-wallet-btn .wallet-icon,
-    .modal .wallet-icon {
-        width: 52px !important;
-        height: 52px !important;
-    }
 }
 
 @media (max-width: 360px) {
     .header {
-        padding: 12px;
+        padding: 4px;
+        align-items: center;
     }
 
     .username {
@@ -386,7 +398,53 @@ body {
     }
 
     .main-logo {
-        height: 40px;
+        height: 28px;
+    }
+
+    /* Modal improvements for mobile */
+    .modal-content {
+        width: 90%;
+        margin: 20% auto;
+        padding: 15px;
+        max-height: 70vh;
+    }
+
+    .deposit-content,
+    .withdraw-content,
+    .calculator-content {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 15px;
+    }
+
+    .deposit-form,
+    .withdraw-form,
+    .calculator-form {
+        padding: 10px;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    .balance-info {
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    /* Improve form elements for mobile */
+    .input-group input {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .deposit-confirm,
+    .withdraw-confirm,
+    .calculate-confirm {
+        width: 100%;
+        margin-top: 10px;
+        padding: 10px;
     }
 }
 
@@ -943,108 +1001,6 @@ body {
 .legend-color.marketing { background: var(--purple-dino); }
 .legend-color.kol { background: var(--surge-green); }
 .legend-color.dex { background: var(--ocean-blue); }
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .header {
-        padding: 15px;
-        margin-bottom: 20px;
-        justify-content: space-between;
-    }
-
-    .logo-container {
-        position: relative;
-        transform: none;
-        order: 0;
-        margin: 0;
-    }
-
-    .main-logo {
-        height: 45px;
-    }
-
-    .header-buttons {
-        flex-wrap: nowrap;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-
-    .username {
-        font-size: 14px;
-        padding: 6px 12px;
-    }
-
-    .connect-wallet {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px;
-    }
-
-    .wallet-icon {
-        width: 56px;
-        height: 56px;
-    }
-}
-
-@media (max-width: 360px) {
-    .header {
-        padding: 12px;
-    }
-
-    .username {
-        font-size: 13px;
-        padding: 5px 10px;
-    }
-
-    .connect-wallet {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 4px;
-    }
-
-    .wallet-icon {
-        width: 28px;
-        height: 28px;
-    }
-
-    .connect-wallet-btn .wallet-icon,
-    .modal .wallet-icon {
-        width: 25px !important;
-        height: 25px !important;
-    }
-
-    .main-logo {
-        height: 40px;
-    }
-}
-
-/* Improve touch interactions */
-@media (hover: none) {
-    .method-button:not(:disabled):active,
-    .team-card:active,
-    .feature-card:active,
-    .expertise span:active {
-        transform: scale(0.98);
-    }
-}
-
-/* Prevent text selection on interactive elements */
-.button-icon,
-.method-button,
-.team-card h3,
-.team-card .role,
-.expertise span {
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-/* Improve scrolling behavior */
-.modal-content {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-}
 
 /* About Section Styles */
 .about-section {
