@@ -1,5 +1,5 @@
 // Mining Constants and Variables
-const BASE_MINING_RATE = 0.005; // USDT per minute
+const BASE_MINING_RATE = 0.0025; // USDT per minute
 const MIN_STAKE_AMOUNT = 100000; // Minimum SOLPI required
 const RATE_MULTIPLIER = 0.01; // USDT addition per 10M SOLPI staked
 const POWER_INCREMENT = 0.025; // Mining power increase per captcha solve (changed from 0.05)
@@ -107,7 +107,7 @@ const updateTotalMined = () => {
     const miningRate = BASE_MINING_RATE * miningPower;
     totalMined += miningRate;
     localStorage.setItem('totalMined', totalMined.toString());
-    document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
+    document.getElementById('mining-rate').textContent = (0.0025).toFixed(3);
     document.getElementById('actual-mining-rate').textContent = miningRate.toFixed(3);
     document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
 };
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
     miningPowerElement.textContent = miningPower.toFixed(4) + 'x';
     
     // Initialize mining rate display with fixed base rate
-    document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
+    document.getElementById('mining-rate').textContent = (0.0025).toFixed(3);
     
     // Initialize actual mining rate display
     const actualRate = BASE_MINING_RATE * miningPower;
@@ -522,8 +522,8 @@ function updateMining() {
 
 // Update mining rate
 function updateMiningRate() {
-    // Display base rate (always 0.005)
-    document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
+    // Display base rate (always 0.0025)
+    document.getElementById('mining-rate').textContent = (0.0025).toFixed(3);
     
     // Calculate and display actual mining rate with multipliers
     const actualRate = BASE_MINING_RATE * miningPower;
@@ -534,7 +534,7 @@ function updateMiningRate() {
 function updateDisplays() {
     document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
     document.getElementById('staked-amount').textContent = stakedAmount.toLocaleString() + ' SOLPI';
-    document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
+    document.getElementById('mining-rate').textContent = (0.0025).toFixed(3);
     document.getElementById('mining-power').textContent = miningPower.toFixed(4) + 'x';
     document.getElementById('solpiBalance').textContent = '0 SOLPI';
     document.getElementById('usdtBalance').textContent = totalMined.toFixed(3) + ' USDT';

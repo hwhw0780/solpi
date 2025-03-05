@@ -35,7 +35,7 @@ async function updateMiningProgress() {
         for (const [userId, session] of activeMiningUsers.entries()) {
             try {
                 const miningDuration = (Date.now() - session.startTime) / 1000 / 60; // Duration in minutes
-                const baseRate = 0.005; // Base rate in USDT per minute
+                const baseRate = 0.0025; // Base rate in USDT per minute
                 const earnings = baseRate * miningDuration * session.miningPower;
 
                 // Get user from database
@@ -271,7 +271,7 @@ bot.onText(/\/help/, (msg) => {
         '/open - Open mining dashboard\n' +
         '/help - Show this help message\n\n' +
         '💡 Mining Tips:\n' +
-        '- Base Rate: 0.005 USDT per minute\n' +
+        '- Base Rate: 0.0025 USDT per minute\n' +
         '- Solve captchas to boost mining power by 0.025x\n' +
         '- Boosts can be earned every 2 hours\n' +
         '- Keep this chat open to continue mining\n' +
@@ -330,7 +330,7 @@ bot.onText(/\/start/, async (msg) => {
 
             bot.sendMessage(chatId, 
                 '🚀 Mining Started Successfully!\n\n' +
-                '💰 Base Rate: 0.005 USDT per minute\n' +
+                '💰 Base Rate: 0.0025 USDT per minute\n' +
                 `⚡ Your Mining Power: ${activeMiningUsers.get(chatId).miningPower.toFixed(4)}x\n\n` +
                 '📈 Boost your earnings:\n' +
                 '- Solve captchas to increase mining power by 0.025x\n' +
@@ -389,7 +389,7 @@ bot.onText(/\/status/, async (msg) => {
             const session = activeMiningUsers.get(chatId);
             const miningStatus = session ? '🟢 Currently Mining' : '🔴 Not Mining';
             const currentEarnings = session ? 
-                ((Date.now() - session.startTime) / 1000 / 60 * 0.005 * session.miningPower).toFixed(3) : 
+                ((Date.now() - session.startTime) / 1000 / 60 * 0.0025 * session.miningPower).toFixed(3) : 
                 '0.000';
 
             bot.sendMessage(chatId,
