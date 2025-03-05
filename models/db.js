@@ -1,32 +1,11 @@
 const { Sequelize } = require('sequelize');
 
-// Parse DATABASE_URL safely
-let dbHost;
-try {
-    const dbUrl = new URL(process.env.DATABASE_URL);
-    dbHost = dbUrl.hostname;
-} catch (err) {
-    console.error(`[${new Date().toISOString()}] [DB] Error parsing DATABASE_URL:`, err);
-    dbHost = 'unknown';
-}
-
-// Create Sequelize instance with explicit configuration
-const sequelize = new Sequelize({
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
-    host: dbHost,
-    port: 5432,
-    database: 'solpi_db',
-    username: 'solpi_db_user',
-    password: 'BIAAI26BEKJBhtQgeMKM0SxukQhc4NYd',
     dialectOptions: {
         ssl: {
             require: true,
             rejectUnauthorized: false
-        },
-        keepAlive: true,
-        keepAliveInitialDelayMillis: 10000,
-        options: {
-            encrypt: true
         }
     },
     pool: {
@@ -34,27 +13,6 @@ const sequelize = new Sequelize({
         min: 0,
         acquire: 120000,
         idle: 20000
-    },
-    retry: {
-        max: 10,
-        timeout: 20000,
-        match: [
-            /ConnectionError/,
-            /SequelizeConnectionError/,
-            /SequelizeConnectionRefusedError/,
-            /SequelizeHostNotFoundError/,
-            /SequelizeHostNotReachableError/,
-            /SequelizeInvalidConnectionError/,
-            /SequelizeConnectionTimedOutError/,
-            /TimeoutError/,
-            /InvalidConnectionError/,
-            "ECONNRESET",
-            "ETIMEDOUT",
-            "EHOSTUNREACH",
-            "EHOSTDOWN",
-            "EPIPE",
-            "ECONNREFUSED"
-        ]
     },
     logging: (msg) => console.log(`[${new Date().toISOString()}] [DB] ${msg}`)
 });
@@ -64,7 +22,7 @@ async function testConnection() {
     let retries = 10;
     while (retries > 0) {
         try {
-            console.log(`[${new Date().toISOString()}] [DB] Attempting to connect to ${dbHost}...`);
+            console.log(`[${new Date().toISOString()}] [DB] Attempting to connect to database...`);
             await sequelize.authenticate();
             console.log(`[${new Date().toISOString()}] [DB] Connection established successfully.`);
             return true;
