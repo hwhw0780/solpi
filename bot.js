@@ -445,20 +445,34 @@ async function initializeBot() {
         
         // Remove any existing webhook
         await bot.deleteWebHook();
+        debugLog('INIT', 'Deleted existing webhook');
         
         // Set the webhook with the correct URL
         const webhookUrl = 'https://solpi.onrender.com/webhook/' + token;
-        const result = await bot.setWebHook(webhookUrl);
+        const result = await bot.setWebHook(webhookUrl, {
+            max_connections: 40,
+            drop_pending_updates: true
+        });
         
         if (result) {
             debugLog('WEBHOOK', `Webhook successfully set to: ${webhookUrl}`);
+            
+            // Verify webhook status
+            const webhookInfo = await bot.getWebHookInfo();
+            debugLog('WEBHOOK_INFO', 'Current webhook status:', webhookInfo);
+            
+            // Clear any pending updates if necessary
+            if (webhookInfo.pending_update_count > 0) {
+                debugLog('WEBHOOK', `Found ${webhookInfo.pending_update_count} pending updates, clearing...`);
+                await bot.deleteWebHook({ drop_pending_updates: true });
+                await bot.setWebHook(webhookUrl, {
+                    max_connections: 40,
+                    drop_pending_updates: true
+                });
+            }
         } else {
             throw new Error('Failed to set webhook');
         }
-        
-        // Verify webhook
-        const webhookInfo = await bot.getWebHookInfo();
-        debugLog('WEBHOOK_INFO', 'Current webhook status:', webhookInfo);
         
         return true;
     } catch (error) {
@@ -491,6 +505,33 @@ async function cleanup() {
     }
 }
 
+// Add periodic webhook health check and recovery
+setInterval(async () => {
+    try {
+        const webhookInfo = await bot.getWebHookInfo();
+        debugLog('HEALTH_CHECK', 'Webhook status', {
+            url: webhookInfo.url,
+            hasCustomCertificate: webhookInfo.has_custom_certificate,
+            pendingUpdateCount: webhookInfo.pending_update_count,
+            lastErrorDate: webhookInfo.last_error_date,
+            lastErrorMessage: webhookInfo.last_error_message,
+            maxConnections: webhookInfo.max_connections,
+            timestamp: new Date()
+        });
+
+        // If webhook is not set or has errors, try to reset it
+        if (!webhookInfo.url || webhookInfo.last_error_date || webhookInfo.pending_update_count > 0) {
+            debugLog('WEBHOOK_RECOVERY', 'Webhook needs reset, attempting to reinitialize');
+            await initializeBot();
+        }
+    } catch (error) {
+        debugLog('HEALTH_CHECK_ERROR', 'Failed to get webhook info', {
+            error: error.message,
+            stack: error.stack
+        });
+    }
+}, 60000);
+
 // Initialize the bot
 initializeBot().then(success => {
     if (success) {
@@ -517,33 +558,6 @@ bot.on('webhook_error', (error) => {
         stack: error.stack
     });
 });
-
-// Add periodic health check
-setInterval(async () => {
-    try {
-        const webhookInfo = await bot.getWebHookInfo();
-        debugLog('HEALTH_CHECK', 'Webhook status', {
-            url: webhookInfo.url,
-            hasCustomCertificate: webhookInfo.has_custom_certificate,
-            pendingUpdateCount: webhookInfo.pending_update_count,
-            lastErrorDate: webhookInfo.last_error_date,
-            lastErrorMessage: webhookInfo.last_error_message,
-            maxConnections: webhookInfo.max_connections,
-            timestamp: new Date()
-        });
-
-        // If webhook is not set, try to set it again
-        if (!webhookInfo.url) {
-            debugLog('WEBHOOK_RECOVERY', 'Webhook URL is empty, attempting to set it again');
-            await initializeBot();
-        }
-    } catch (error) {
-        debugLog('HEALTH_CHECK_ERROR', 'Failed to get webhook info', {
-            error: error.message,
-            stack: error.stack
-        });
-    }
-}, 60000);
 
 // Export the bot instance
 module.exports = bot; 

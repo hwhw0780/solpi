@@ -27,7 +27,7 @@ app.use(express.static('public'));
 app.use(express.static(path.join(__dirname)));
 
 // Webhook endpoint for Telegram bot
-app.post('/webhook/' + process.env.TELEGRAM_BOT_TOKEN, (req, res) => {
+app.post('/webhook/' + process.env.TELEGRAM_BOT_TOKEN, async (req, res) => {
     try {
         serverLog('WEBHOOK', 'Received update from Telegram', {
             update_id: req.body.update_id,
@@ -36,7 +36,11 @@ app.post('/webhook/' + process.env.TELEGRAM_BOT_TOKEN, (req, res) => {
             type: req.body.message ? 'message' : 'other'
         });
 
-        bot.handleUpdate(req.body);
+        if (!bot.processUpdate) {
+            throw new Error('Bot instance is not properly initialized');
+        }
+
+        await bot.processUpdate(req.body);
         res.sendStatus(200);
     } catch (error) {
         serverLog('WEBHOOK_ERROR', 'Error handling webhook update', {
@@ -44,7 +48,29 @@ app.post('/webhook/' + process.env.TELEGRAM_BOT_TOKEN, (req, res) => {
             stack: error.stack,
             body: req.body
         });
-        res.sendStatus(500);
+        
+        // Send 200 status even on error to prevent Telegram from retrying
+        // as per Telegram Bot API best practices
+        res.sendStatus(200);
+        
+        // Try to reinitialize the bot if there's an initialization error
+        if (error.message === 'Bot instance is not properly initialized') {
+            serverLog('WEBHOOK_RECOVERY', 'Attempting to reinitialize bot');
+            try {
+                await bot.deleteWebHook();
+                const webhookUrl = 'https://solpi.onrender.com/webhook/' + process.env.TELEGRAM_BOT_TOKEN;
+                await bot.setWebHook(webhookUrl, {
+                    max_connections: 40,
+                    drop_pending_updates: true
+                });
+                serverLog('WEBHOOK_RECOVERY', 'Bot reinitialization successful');
+            } catch (reinitError) {
+                serverLog('WEBHOOK_RECOVERY_ERROR', 'Failed to reinitialize bot', {
+                    error: reinitError.message,
+                    stack: reinitError.stack
+                });
+            }
+        }
     }
 });
 
