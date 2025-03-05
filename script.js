@@ -2,7 +2,7 @@
 const BASE_MINING_RATE = 0.005; // USDT per minute
 const MIN_STAKE_AMOUNT = 100000; // Minimum SOLPI required
 const RATE_MULTIPLIER = 0.01; // USDT addition per 10M SOLPI staked
-const POWER_INCREMENT = 0.05; // Mining power increase per captcha solve
+const POWER_INCREMENT = 0.025; // Mining power increase per captcha solve (changed from 0.05)
 
 let totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
 let stakedAmount = parseInt(localStorage.getItem('stakedAmount')) || 0;
@@ -303,8 +303,8 @@ function verifyCaptcha() {
         activateBoost(newEndTime);
         localStorage.setItem('boostEndTime', newEndTime.toString());
         
-        // Update mining power display
-        miningPowerElement.textContent = miningPower.toFixed(2) + 'x';
+        // Update mining power display with 4 decimal points
+        miningPowerElement.textContent = miningPower.toFixed(4) + 'x';
         
         // Update mining rate display to reflect new power
         updateMiningRate();
@@ -535,7 +535,8 @@ function updateDisplays() {
     document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
     document.getElementById('staked-amount').textContent = stakedAmount.toLocaleString() + ' SOLPI';
     document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
-    document.getElementById('solpiBalance').textContent = '0 SOLPI'; // Update with actual balance when wallet is connected
+    document.getElementById('mining-power').textContent = miningPower.toFixed(4) + 'x';
+    document.getElementById('solpiBalance').textContent = '0 SOLPI';
     document.getElementById('usdtBalance').textContent = totalMined.toFixed(3) + ' USDT';
 }
 
@@ -661,11 +662,18 @@ function getUrlParameter(name) {
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
 }
 
+// Initialize username display immediately
+const username = getUrlParameter('u');
+if (username) {
+    document.querySelector('.username').textContent = username; // Remove @ symbol
+    localStorage.setItem('telegramUsername', username);
+}
+
 // Initialize mining data
 async function initializeMiningData() {
     const username = getUrlParameter('u');
     if (username) {
-        document.querySelector('.username').textContent = '@' + username;
+        document.querySelector('.username').textContent = username; // Remove @ symbol
         localStorage.setItem('telegramUsername', username);
         try {
             await loadUserData(username);
@@ -676,7 +684,7 @@ async function initializeMiningData() {
     } else {
         const storedUsername = localStorage.getItem('telegramUsername');
         if (storedUsername) {
-            document.querySelector('.username').textContent = '@' + storedUsername;
+            document.querySelector('.username').textContent = storedUsername; // Remove @ symbol
             try {
                 await loadUserData(storedUsername);
             } catch (error) {
@@ -693,6 +701,12 @@ async function initializeMiningData() {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize username display again in case the DOM wasn't ready earlier
+    const username = getUrlParameter('u');
+    if (username) {
+        document.querySelector('.username').textContent = username; // Remove @ symbol
+    }
+    
     initializeMiningData();
     setInterval(updateMining, 60000); // Update mining rewards every minute
 

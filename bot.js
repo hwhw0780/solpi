@@ -158,9 +158,9 @@ bot.onText(/\/start/, async (msg) => {
         bot.sendMessage(chatId, 
             '🚀 Mining Started Successfully!\n\n' +
             '💰 Base Rate: 0.005 USDT per minute\n' +
-            `⚡ Your Mining Power: ${activeMiningUsers.get(chatId).miningPower}x\n\n` +
+            `⚡ Your Mining Power: ${activeMiningUsers.get(chatId).miningPower.toFixed(4)}x\n\n` +
             '📱 Keep this chat open to continue mining\n' +
-            `🌐 Visit https://solpi.onrender.com?u=${username} to:\n` +
+            `🌐 Visit https://solpi.onrender.com?u=${encodeURIComponent(username)} to:\n` +
             '   - Solve captchas for mining boosts\n' +
             '   - Track your earnings in real-time\n' +
             '   - Withdraw your USDT\n\n' +
@@ -195,10 +195,10 @@ bot.onText(/\/status/, async (msg) => {
             bot.sendMessage(chatId,
                 '📊 Mining Status Report\n\n' +
                 `Status: ${miningStatus}\n` +
-                `⚡ Mining Power: ${user.miningPower}x\n` +
+                `⚡ Mining Power: ${user.miningPower.toFixed(4)}x\n` +
                 `💰 Total Mined: ${user.totalMined.toFixed(3)} USDT\n` +
                 `📈 Current Session: ${currentEarnings} USDT\n\n` +
-                `🌐 Visit https://solpi.onrender.com?u=${username} to:\n` +
+                `🌐 Visit https://solpi.onrender.com?u=${encodeURIComponent(username)} to:\n` +
                 '   - Boost your mining power\n' +
                 '   - Track earnings in real-time\n' +
                 '   - Withdraw your USDT\n\n' +
