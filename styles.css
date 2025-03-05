@@ -68,8 +68,8 @@ body {
 }
 
 .wallet-icon {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     margin-right: 8px;
     display: inline-flex;
     align-items: center;
@@ -342,40 +342,35 @@ body {
     }
 
     .wallet-icon {
-        width: 90px;
-        height: 90px;
+        width: 56px;
+        height: 56px;
     }
     
     .connect-wallet {
-        padding: 14px;
-    }
-    
-    .connect-wallet-btn {
-        padding: 14px 20px;
-        font-size: 16px;
+        padding: 12px;
     }
     
     .connect-wallet-btn .wallet-icon,
     .modal .wallet-icon {
-        width: 42px !important;
-        height: 42px !important;
+        width: 52px !important;
+        height: 52px !important;
     }
 }
 
 @media (max-width: 360px) {
     .wallet-icon {
-        width: 85px;
-        height: 85px;
+        width: 64px;
+        height: 64px;
     }
 
     .connect-wallet {
-        padding: 16px;
+        padding: 14px;
     }
 
     .connect-wallet-btn .wallet-icon,
     .modal .wallet-icon {
-        width: 36px !important;
-        height: 36px !important;
+        width: 60px !important;
+        height: 60px !important;
     }
 }
 
