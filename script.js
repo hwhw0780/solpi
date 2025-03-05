@@ -107,7 +107,8 @@ const updateTotalMined = () => {
     const miningRate = BASE_MINING_RATE * miningPower;
     totalMined += miningRate;
     localStorage.setItem('totalMined', totalMined.toString());
-    document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(3);
+    document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
+    document.getElementById('actual-mining-rate').textContent = miningRate.toFixed(3);
     document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
 };
 
@@ -457,8 +458,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize mining power display
     miningPowerElement.textContent = miningPower.toFixed(1) + 'x';
     
-    // Initialize mining rate display
-    document.getElementById('mining-rate').textContent = (BASE_MINING_RATE * miningPower).toFixed(2);
+    // Initialize mining rate display with fixed base rate
+    document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
+    
+    // Initialize actual mining rate display
+    const actualRate = BASE_MINING_RATE * miningPower;
+    document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(3);
     
     // Initialize mining update interval
     setInterval(updateTotalMined, 60000);
@@ -648,15 +653,42 @@ async function loadUserData(username) {
     }
 }
 
+// Function to get URL parameters
+function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    const results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+}
+
 // Initialize mining data
-function initializeMiningData() {
-    const username = localStorage.getItem('telegramUsername');
+async function initializeMiningData() {
+    const username = getUrlParameter('u');
     if (username) {
-        loadUserData(username);
+        document.querySelector('.username').textContent = '@' + username;
+        localStorage.setItem('telegramUsername', username);
+        try {
+            await loadUserData(username);
+        } catch (error) {
+            console.error('Error loading user data:', error);
+            totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
+        }
     } else {
-        totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
-        updateDisplays();
+        const storedUsername = localStorage.getItem('telegramUsername');
+        if (storedUsername) {
+            document.querySelector('.username').textContent = '@' + storedUsername;
+            try {
+                await loadUserData(storedUsername);
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
+            }
+        } else {
+            document.querySelector('.username').textContent = 'Not Connected';
+            totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
+        }
     }
+    updateDisplays();
 }
 
 // Event Listeners

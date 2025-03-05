@@ -123,7 +123,6 @@ bot.onText(/\/help/, (msg) => {
         '🌟 Welcome to SOLPI Mining Bot! 🌟\n\n' +
         'Available commands:\n' +
         '/start - Start mining USDT\n' +
-        '/stop - Stop mining and collect earnings\n' +
         '/status - Check your mining status\n' +
         '/help - Show this help message\n\n' +
         '💡 Tips:\n' +
@@ -161,45 +160,17 @@ bot.onText(/\/start/, async (msg) => {
             '💰 Base Rate: 0.005 USDT per minute\n' +
             `⚡ Your Mining Power: ${activeMiningUsers.get(chatId).miningPower}x\n\n` +
             '📱 Keep this chat open to continue mining\n' +
-            '🌐 Visit https://solpi.onrender.com to:\n' +
+            `🌐 Visit https://solpi.onrender.com?u=${username} to:\n` +
             '   - Solve captchas for mining boosts\n' +
             '   - Track your earnings in real-time\n' +
             '   - Withdraw your USDT\n\n' +
-            'Use /status to check your mining progress\n' +
-            'Use /stop to end mining session'
+            'Use /status to check your mining progress'
         );
     } else {
         bot.sendMessage(chatId, 
             '⚠️ Mining Already Active\n\n' +
             'You have an active mining session.\n' +
-            'Use /status to check your progress\n' +
-            'Use /stop to end current session'
-        );
-    }
-});
-
-// Stop command handler
-bot.onText(/\/stop/, async (msg) => {
-    const chatId = msg.chat.id;
-    debugLog('COMMAND', 'Stop command received', msg);
-    
-    const result = await stopMining(chatId);
-
-    if (result) {
-        bot.sendMessage(chatId, 
-            '⛏ Mining Session Ended!\n\n' +
-            `⏱ Duration: ${result.duration.toFixed(2)} minutes\n` +
-            `💰 Earnings: ${result.earnings.toFixed(3)} USDT\n\n` +
-            '🌐 Visit https://solpi.onrender.com to:\n' +
-            '   - View your total earnings\n' +
-            '   - Withdraw your USDT\n\n' +
-            'Use /start to begin a new mining session!'
-        );
-    } else {
-        bot.sendMessage(chatId, 
-            '⚠️ No Active Mining Session\n\n' +
-            'You don\'t have an active mining session.\n' +
-            'Use /start to begin mining!'
+            'Use /status to check your progress'
         );
     }
 });
@@ -227,13 +198,12 @@ bot.onText(/\/status/, async (msg) => {
                 `⚡ Mining Power: ${user.miningPower}x\n` +
                 `💰 Total Mined: ${user.totalMined.toFixed(3)} USDT\n` +
                 `📈 Current Session: ${currentEarnings} USDT\n\n` +
-                '🌐 Visit https://solpi.onrender.com to:\n' +
+                `🌐 Visit https://solpi.onrender.com?u=${username} to:\n` +
                 '   - Boost your mining power\n' +
                 '   - Track earnings in real-time\n' +
                 '   - Withdraw your USDT\n\n' +
                 'Available Commands:\n' +
                 '/start - Start mining\n' +
-                '/stop - Stop mining\n' +
                 '/help - Show all commands'
             );
         } else {
@@ -258,13 +228,12 @@ bot.onText(/\/status/, async (msg) => {
 bot.on('message', (msg) => {
     if (msg.text && msg.text.startsWith('/')) {
         const command = msg.text.split(' ')[0];
-        if (!['/start', '/stop', '/status', '/help'].includes(command)) {
+        if (!['/start', '/status', '/help'].includes(command)) {
             debugLog('COMMAND', `Unknown command received: ${command}`, msg);
             bot.sendMessage(msg.chat.id,
                 '❓ Unknown Command\n\n' +
                 'Available commands:\n' +
                 '/start - Start mining\n' +
-                '/stop - Stop mining\n' +
                 '/status - Check mining status\n' +
                 '/help - Show all commands'
             );
