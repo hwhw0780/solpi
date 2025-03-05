@@ -27,17 +27,34 @@ app.use(express.static('public'));
 app.use(express.static(path.join(__dirname)));
 
 // Webhook endpoint for Telegram bot
-app.post(`/webhook/${process.env.TELEGRAM_BOT_TOKEN}`, (req, res) => {
+app.post('/webhook/' + process.env.TELEGRAM_BOT_TOKEN, (req, res) => {
     try {
+        serverLog('WEBHOOK', 'Received update from Telegram', {
+            update_id: req.body.update_id,
+            message_id: req.body.message?.message_id,
+            chat_id: req.body.message?.chat?.id,
+            type: req.body.message ? 'message' : 'other'
+        });
+
         bot.handleUpdate(req.body);
         res.sendStatus(200);
     } catch (error) {
         serverLog('WEBHOOK_ERROR', 'Error handling webhook update', {
             error: error.message,
+            stack: error.stack,
             body: req.body
         });
         res.sendStatus(500);
     }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date(),
+        activeMiningUsers: bot.activeMiningUsers ? bot.activeMiningUsers.size : 0
+    });
 });
 
 // API routes for user data

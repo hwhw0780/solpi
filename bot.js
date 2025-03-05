@@ -15,13 +15,14 @@ function debugLog(context, message, data = null) {
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const options = {
     webHook: {
+        host: '0.0.0.0',
         port: process.env.PORT || 3000
     }
 };
 
-// Create a bot instance
-const bot = new TelegramBot(token, options);
-debugLog('BOT', 'Telegram bot instance created with webhook mode');
+// Create a bot instance without starting webhook server (we'll use Express)
+const bot = new TelegramBot(token, { polling: false });
+debugLog('BOT', 'Telegram bot instance created');
 
 // Store active mining sessions
 const activeMiningUsers = new Map();
@@ -437,20 +438,22 @@ async function initializeBot() {
     try {
         debugLog('INIT', 'Starting bot initialization');
         
-        // Get public URL from environment
-        const url = process.env.PUBLIC_URL || 'https://solpi.onrender.com';
-        const webhookPath = `/webhook/${token}`;
-        
         // Remove any existing webhook
         await bot.deleteWebHook();
         
-        // Set the webhook
-        await bot.setWebHook(`${url}${webhookPath}`);
-        debugLog('WEBHOOK', `Webhook set to: ${url}${webhookPath}`);
+        // Set the webhook with the correct URL
+        const webhookUrl = 'https://solpi.onrender.com/webhook/' + token;
+        const result = await bot.setWebHook(webhookUrl);
         
-        // Set up cleanup on process termination
-        process.on('SIGTERM', cleanup);
-        process.on('SIGINT', cleanup);
+        if (result) {
+            debugLog('WEBHOOK', `Webhook successfully set to: ${webhookUrl}`);
+        } else {
+            throw new Error('Failed to set webhook');
+        }
+        
+        // Verify webhook
+        const webhookInfo = await bot.getWebHookInfo();
+        debugLog('WEBHOOK_INFO', 'Current webhook status:', webhookInfo);
         
         return true;
     } catch (error) {
@@ -485,7 +488,13 @@ async function cleanup() {
 
 // Initialize the bot
 initializeBot().then(success => {
-    if (!success) {
+    if (success) {
+        debugLog('INIT', 'Bot successfully initialized');
+        
+        // Set up cleanup handlers
+        process.on('SIGTERM', cleanup);
+        process.on('SIGINT', cleanup);
+    } else {
         debugLog('FATAL', 'Bot initialization failed');
         process.exit(1);
     }
@@ -517,6 +526,12 @@ setInterval(async () => {
             maxConnections: webhookInfo.max_connections,
             timestamp: new Date()
         });
+
+        // If webhook is not set, try to set it again
+        if (!webhookInfo.url) {
+            debugLog('WEBHOOK_RECOVERY', 'Webhook URL is empty, attempting to set it again');
+            await initializeBot();
+        }
     } catch (error) {
         debugLog('HEALTH_CHECK_ERROR', 'Failed to get webhook info', {
             error: error.message,
