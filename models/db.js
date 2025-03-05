@@ -1,14 +1,33 @@
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+// Parse DATABASE_URL safely
+let dbHost;
+try {
+    const dbUrl = new URL(process.env.DATABASE_URL);
+    dbHost = dbUrl.hostname;
+} catch (err) {
+    console.error(`[${new Date().toISOString()}] [DB] Error parsing DATABASE_URL:`, err);
+    dbHost = 'unknown';
+}
+
+// Create Sequelize instance with explicit configuration
+const sequelize = new Sequelize({
     dialect: 'postgres',
+    host: dbHost,
+    port: 5432,
+    database: 'solpi_db',
+    username: 'solpi_db_user',
+    password: 'BIAAI26BEKJBhtQgeMKM0SxukQhc4NYd',
     dialectOptions: {
         ssl: {
             require: true,
             rejectUnauthorized: false
         },
         keepAlive: true,
-        keepAliveInitialDelayMillis: 10000
+        keepAliveInitialDelayMillis: 10000,
+        options: {
+            encrypt: true
+        }
     },
     pool: {
         max: 5,
@@ -17,17 +36,35 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
         idle: 20000
     },
     retry: {
-        max: 5,
-        timeout: 10000
+        max: 10,
+        timeout: 20000,
+        match: [
+            /ConnectionError/,
+            /SequelizeConnectionError/,
+            /SequelizeConnectionRefusedError/,
+            /SequelizeHostNotFoundError/,
+            /SequelizeHostNotReachableError/,
+            /SequelizeInvalidConnectionError/,
+            /SequelizeConnectionTimedOutError/,
+            /TimeoutError/,
+            /InvalidConnectionError/,
+            "ECONNRESET",
+            "ETIMEDOUT",
+            "EHOSTUNREACH",
+            "EHOSTDOWN",
+            "EPIPE",
+            "ECONNREFUSED"
+        ]
     },
     logging: (msg) => console.log(`[${new Date().toISOString()}] [DB] ${msg}`)
 });
 
 // Test the connection with retry logic
 async function testConnection() {
-    let retries = 5;
+    let retries = 10;
     while (retries > 0) {
         try {
+            console.log(`[${new Date().toISOString()}] [DB] Attempting to connect to ${dbHost}...`);
             await sequelize.authenticate();
             console.log(`[${new Date().toISOString()}] [DB] Connection established successfully.`);
             return true;
@@ -41,8 +78,9 @@ async function testConnection() {
                 console.error(`[${new Date().toISOString()}] [DB] All connection attempts failed.`);
                 return false;
             }
-            console.log(`[${new Date().toISOString()}] [DB] Retrying connection in 10 seconds... (${retries} attempts remaining)`);
-            await new Promise(resolve => setTimeout(resolve, 10000));
+            const delay = (11 - retries) * 10000; // Increasing delay with each retry
+            console.log(`[${new Date().toISOString()}] [DB] Retrying connection in ${delay/1000} seconds... (${retries} attempts remaining)`);
+            await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
 }
