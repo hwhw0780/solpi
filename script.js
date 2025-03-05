@@ -516,7 +516,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Mining update interval
 function updateMining() {
-    totalMined += currentMiningRate * miningPower;
+    const baseRate = 0.0025;
+    const miningPowerValue = parseFloat(miningPower) || 1;
+    const increment = baseRate * miningPowerValue;
+    
+    totalMined = (parseFloat(totalMined) || 0) + increment;
     localStorage.setItem('totalMined', totalMined.toString());
     updateDisplays();
     
@@ -529,25 +533,36 @@ function updateMining() {
 
 // Update mining rate
 function updateMiningRate() {
-    // Display base rate (always 0.0025)
-    document.getElementById('mining-rate').textContent = (0.0025).toFixed(4);
+    const baseRate = 0.0025;
+    const miningPowerValue = parseFloat(miningPower) || 1;
+    
+    // Display base rate
+    document.getElementById('mining-rate').textContent = baseRate.toFixed(4);
     
     // Calculate and display actual mining rate with multipliers
-    const actualRate = BASE_MINING_RATE * miningPower;
+    const actualRate = baseRate * miningPowerValue;
     document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(4);
 }
 
 // Update all displays
 function updateDisplays() {
-    const totalMined = document.getElementById('total-mined');
-    const miningRate = document.getElementById('mining-rate');
-    const actualMiningRate = document.getElementById('actual-mining-rate');
-    const miningPower = document.getElementById('mining-power');
+    const totalMinedElement = document.getElementById('total-mined');
+    const miningRateElement = document.getElementById('mining-rate');
+    const actualMiningRateElement = document.getElementById('actual-mining-rate');
+    const miningPowerElement = document.getElementById('mining-power');
+    const calculationPowerElement = document.getElementById('calculation-power');
 
-    if (totalMined) totalMined.textContent = `${parseFloat(totalMined).toFixed(4)} USDT`;
-    if (miningRate) miningRate.textContent = (0.0025).toFixed(4);
-    if (actualMiningRate) actualMiningRate.textContent = (0.0025 * miningPower).toFixed(4);
-    if (miningPower) miningPower.textContent = `${miningPower.toFixed(4)}x`;
+    // Ensure values are numbers and handle potential NaN
+    const totalMinedValue = parseFloat(totalMined) || 0;
+    const miningPowerValue = parseFloat(miningPower) || 1;
+    const baseRate = 0.0025;
+    const actualRate = baseRate * miningPowerValue;
+
+    if (totalMinedElement) totalMinedElement.textContent = `${totalMinedValue.toFixed(4)} USDT`;
+    if (miningRateElement) miningRateElement.textContent = baseRate.toFixed(4);
+    if (actualMiningRateElement) actualMiningRateElement.textContent = actualRate.toFixed(4);
+    if (miningPowerElement) miningPowerElement.textContent = `${miningPowerValue.toFixed(4)}x`;
+    if (calculationPowerElement) calculationPowerElement.textContent = miningPowerValue.toFixed(4);
 }
 
 // Calculator Functions
@@ -796,4 +811,29 @@ function scrollToMiningPower() {
             miningPowerSection.classList.remove('highlight-section');
         }, 2000);
     }
+}
+
+function copyAddress() {
+    const address = document.getElementById('contractAddress').textContent;
+    navigator.clipboard.writeText(address).then(() => {
+        const copyButton = document.querySelector('.copy-button');
+        const originalIcon = copyButton.innerHTML;
+        
+        // Show success state
+        copyButton.innerHTML = `
+            <svg class="copy-icon" viewBox="0 0 24 24" width="16" height="16">
+                <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+        `;
+        copyButton.style.color = '#00FFA3';
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            copyButton.innerHTML = originalIcon;
+            copyButton.style.color = '';
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy address. Please try again.');
+    });
 } 
