@@ -8,15 +8,15 @@ const bot = require('./bot');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
-
 // Admin dashboard route
 app.get('/admin', (req, res) => {
     res.sendFile(__dirname + '/public/admin.html');
 });
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
 
 // API routes for user data
 app.get('/api/users', async (req, res) => {
@@ -70,9 +70,28 @@ app.post('/api/user/:username/mining', async (req, res) => {
 // Start the server
 async function startServer() {
     try {
-        // Test database connection
-        await sequelize.authenticate();
-        console.log('Database connection has been established successfully.');
+        // Test database connection with retries
+        let connected = false;
+        let retries = 5;
+        
+        while (!connected && retries > 0) {
+            try {
+                await sequelize.authenticate();
+                console.log('Database connection has been established successfully.');
+                connected = true;
+            } catch (error) {
+                console.error('Database connection attempt failed:', error.message);
+                retries--;
+                if (retries > 0) {
+                    console.log(`Retrying connection in 5 seconds... (${retries} attempts remaining)`);
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                }
+            }
+        }
+
+        if (!connected) {
+            throw new Error('Could not connect to the database after multiple attempts');
+        }
 
         // Sync database
         await sequelize.sync();
