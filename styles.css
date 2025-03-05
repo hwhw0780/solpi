@@ -1847,6 +1847,17 @@ body {
     text-align: center;
 }
 
+.actual-rate-value {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: var(--surge-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-shadow: 0 0 10px rgba(0, 255, 163, 0.3);
+}
+
 .calculation-note {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.7);
@@ -1867,6 +1878,10 @@ body {
 @media (max-width: 768px) {
     .calculation-note {
         font-size: 11px;
+    }
+    
+    .actual-rate-value {
+        font-size: 1.1em;
     }
 }
 
