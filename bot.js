@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const { User } = require('./models/user');
+const { checkConnection } = require('./models/db');
 
 // Replace with your bot token
 const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -20,6 +21,29 @@ debugLog('BOT', 'Telegram bot initialized with polling');
 // Store active mining sessions
 const activeMiningUsers = new Map();
 
+// Check database connection before processing commands
+async function ensureDatabaseConnection(chatId) {
+    try {
+        const isConnected = await checkConnection();
+        if (!isConnected) {
+            debugLog('DB_ERROR', 'Database connection is not available');
+            bot.sendMessage(chatId,
+                '❌ Service Temporarily Unavailable\n\n' +
+                'We are experiencing technical difficulties.\n' +
+                'Please try again in a few minutes.'
+            );
+            return false;
+        }
+        return true;
+    } catch (error) {
+        debugLog('DB_ERROR', 'Error checking database connection', {
+            error: error.message,
+            stack: error.stack
+        });
+        return false;
+    }
+}
+
 // Function to start mining for a user
 async function startMining(userId, username) {
     try {
@@ -27,6 +51,11 @@ async function startMining(userId, username) {
 
         if (!username) {
             debugLog('ERROR', 'No username provided', { userId });
+            return false;
+        }
+
+        // Check database connection first
+        if (!(await ensureDatabaseConnection(userId))) {
             return false;
         }
 
@@ -193,6 +222,11 @@ bot.onText(/\/start/, async (msg) => {
         timestamp: new Date()
     });
 
+    // Check database connection first
+    if (!(await ensureDatabaseConnection(chatId))) {
+        return;
+    }
+
     if (!username) {
         debugLog('USERNAME_MISSING', 'User has no username set', {
             chatId,
@@ -268,7 +302,16 @@ bot.onText(/\/start/, async (msg) => {
 bot.onText(/\/status/, async (msg) => {
     const chatId = msg.chat.id;
     const username = msg.from.username;
-    debugLog('COMMAND', 'Status command received', msg);
+    debugLog('COMMAND', 'Status command received', {
+        chatId,
+        username,
+        timestamp: new Date()
+    });
+
+    // Check database connection first
+    if (!(await ensureDatabaseConnection(chatId))) {
+        return;
+    }
 
     try {
         const user = await User.findOne({ where: { telegramUsername: username } });
@@ -386,5 +429,15 @@ setInterval(() => {
 bot.on('message', () => {
     lastPollingTime = Date.now();
 });
+
+// Add periodic database connection check
+setInterval(async () => {
+    const isConnected = await checkConnection();
+    debugLog('DB_CHECK', 'Periodic database connection check', {
+        isConnected,
+        timestamp: new Date(),
+        activeUsers: activeMiningUsers.size
+    });
+}, 60000); // Check every minute
 
 module.exports = bot; 
