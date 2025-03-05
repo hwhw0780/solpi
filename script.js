@@ -370,7 +370,7 @@ function updateCountdown(endTime) {
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-    countdownElement.textContent = `Boost ends in: ${hours}h ${minutes}m ${seconds}s`;
+    countdownElement.textContent = `Solve again in: ${hours}h ${minutes}m ${seconds}s`;
     return timeLeft;
 }
 
@@ -511,18 +511,18 @@ function updateMining() {
 // Update mining rate based on staked amount
 function updateMiningRate() {
     // Display base rate (always 0.005)
-    document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(3);
+    document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(4);
     
     // Calculate and display actual mining rate with multipliers
     const actualRate = BASE_MINING_RATE * miningPower;
-    document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(3);
+    document.getElementById('actual-mining-rate').textContent = actualRate.toFixed(4);
 }
 
 // Update all displays
 function updateDisplays() {
     document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
     document.getElementById('staked-amount').textContent = stakedAmount.toLocaleString() + ' SOLPI';
-    document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(3);
+    document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(4);
     document.getElementById('solpiBalance').textContent = '0 SOLPI'; // Update with actual balance when wallet is connected
     document.getElementById('usdtBalance').textContent = totalMined.toFixed(3) + ' USDT';
 }

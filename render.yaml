@@ -1,12 +1,18 @@
 services:
   - type: web
-    name: solpi
-    env: static
-    buildCommand: npm install -g serve
-    startCommand: serve -s .
-    staticPublishPath: .
-    pullRequestPreviewsEnabled: true
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-cache 
+    name: solpi-admin
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://solpi_db_user:BIAAI26BEKJBhtQgeMKM0SxukQhc4NYd@dpg-cv3sfqd6l47c7388h9sg-a.singapore-postgres.render.com/solpi_db
+      - key: ADMIN_PASSWORD
+        value: solpi-admin-2024
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: solpi-db
+    databaseName: solpi
+    plan: free 

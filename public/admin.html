@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLPI Admin Dashboard</title>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div id="loginSection" class="login-section">
+            <h2>Admin Login</h2>
+            <div class="login-form">
+                <input type="password" id="adminPassword" placeholder="Enter admin password">
+                <button onclick="login()">Login</button>
+            </div>
+        </div>
+
+        <div id="dashboardSection" class="dashboard-section hidden">
+            <header class="admin-header">
+                <h1>SOLPI Admin Dashboard</h1>
+                <button onclick="logout()" class="logout-btn">Logout</button>
+            </header>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>Total Users</h3>
+                    <div id="totalUsers" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Users</h3>
+                    <div id="activeUsers" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total USDT Mined</h3>
+                    <div id="totalMined" class="stat-value">0.0000</div>
+                </div>
+            </div>
+
+            <div class="users-section">
+                <div class="table-header">
+                    <h2>Registered Users</h2>
+                    <div class="table-actions">
+                        <input type="text" id="searchUser" placeholder="Search by username" onkeyup="filterUsers()">
+                        <select id="filterStatus" onchange="filterUsers()">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Telegram Username</th>
+                                <th>Registration Date</th>
+                                <th>Last Active</th>
+                                <th>Mining Power</th>
+                                <th>Total Mined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- User data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <button onclick="previousPage()">Previous</button>
+                    <span id="currentPage">Page 1</span>
+                    <button onclick="nextPage()">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="admin.js"></script>
+</body>
+</html> 
