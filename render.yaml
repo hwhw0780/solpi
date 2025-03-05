@@ -6,11 +6,15 @@ services:
     startCommand: node server.js
     envVars:
       - key: DATABASE_URL
-        value: postgresql://solpi_db_user:BIAAI26BEKJBhtQgeMKM0SxukQhc4NYd@dpg-cv3sfqd6l47c7388h9sg-a.singapore-postgres.render.com/solpi_db
+        value: postgresql://solpi_user:Ow0qYGKvxgLB0vhgYXNHqiDnD6c6Qqm3@dpg-cnqmf0ta73kc73f2ld00-a.singapore-postgres.render.com/solpi
       - key: ADMIN_PASSWORD
         value: solpi-admin-2024
+      - key: TELEGRAM_BOT_TOKEN
+        value: 7589533396:AAEmmM1g-e6r-eQ6YX89AK_OeTb1QYTf2XY
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 3000
 
 databases:
   - name: solpi-db
