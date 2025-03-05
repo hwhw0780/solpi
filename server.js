@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { sequelize } = require('./models/db');
 const { User } = require('./models/user');
 const bot = require('./bot');
@@ -8,15 +9,22 @@ const bot = require('./bot');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Admin dashboard route
-app.get('/admin', (req, res) => {
-    res.sendFile(__dirname + '/public/admin.html');
-});
+// Debug logging function
+function serverLog(context, message, data = null) {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [SERVER:${context}] ${message}`);
+    if (data) {
+        console.log(JSON.stringify(data, null, 2));
+    }
+}
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+
+// Serve static files from root directory
+app.use(express.static(path.join(__dirname)));
 
 // API routes for user data
 app.get('/api/users', async (req, res) => {
@@ -67,6 +75,11 @@ app.post('/api/user/:username/mining', async (req, res) => {
     }
 });
 
+// Serve index.html for all other routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // Start the server
 async function startServer() {
     try {
@@ -74,16 +87,19 @@ async function startServer() {
         let connected = false;
         let retries = 5;
         
-        while (!connected && retries > 0) {
+        while (!retries > 0) {
             try {
                 await sequelize.authenticate();
-                console.log('Database connection has been established successfully.');
+                serverLog('DATABASE', 'Connection established successfully');
                 connected = true;
+                break;
             } catch (error) {
-                console.error('Database connection attempt failed:', error.message);
+                serverLog('DATABASE_ERROR', 'Connection attempt failed', {
+                    error: error.message,
+                    retriesLeft: retries
+                });
                 retries--;
                 if (retries > 0) {
-                    console.log(`Retrying connection in 5 seconds... (${retries} attempts remaining)`);
                     await new Promise(resolve => setTimeout(resolve, 5000));
                 }
             }
@@ -95,15 +111,18 @@ async function startServer() {
 
         // Sync database
         await sequelize.sync();
-        console.log('Database synced successfully');
+        serverLog('DATABASE', 'Database synced successfully');
 
         // Start Express server
         app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-            console.log('Telegram bot is active');
+            serverLog('START', `Server running on port ${PORT}`);
+            serverLog('BOT', 'Telegram bot is active');
         });
     } catch (error) {
-        console.error('Error starting server:', error);
+        serverLog('FATAL', 'Error starting server', {
+            error: error.message,
+            stack: error.stack
+        });
         process.exit(1);
     }
 }
