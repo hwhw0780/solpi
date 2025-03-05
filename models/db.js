@@ -7,19 +7,20 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
             require: true,
             rejectUnauthorized: false
         },
-        keepAlive: true
+        keepAlive: true,
+        keepAliveInitialDelayMillis: 10000
     },
     pool: {
-        max: 3,
+        max: 5,
         min: 0,
-        acquire: 60000,
-        idle: 10000
+        acquire: 120000,
+        idle: 20000
     },
     retry: {
-        max: 3,
-        timeout: 5000
+        max: 5,
+        timeout: 10000
     },
-    logging: false
+    logging: (msg) => console.log(`[${new Date().toISOString()}] [DB] ${msg}`)
 });
 
 // Test the connection with retry logic
@@ -28,20 +29,36 @@ async function testConnection() {
     while (retries > 0) {
         try {
             await sequelize.authenticate();
-            console.log('Database connection established successfully.');
+            console.log(`[${new Date().toISOString()}] [DB] Connection established successfully.`);
             return true;
         } catch (err) {
-            console.error('Database connection attempt failed:', err.message);
+            console.error(`[${new Date().toISOString()}] [DB] Connection attempt failed:`, err.message);
+            if (err.original) {
+                console.error(`[${new Date().toISOString()}] [DB] Original error:`, err.original);
+            }
             retries -= 1;
             if (retries === 0) {
-                console.error('All connection attempts failed.');
+                console.error(`[${new Date().toISOString()}] [DB] All connection attempts failed.`);
                 return false;
             }
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            console.log(`[${new Date().toISOString()}] [DB] Retrying connection in 10 seconds... (${retries} attempts remaining)`);
+            await new Promise(resolve => setTimeout(resolve, 10000));
         }
     }
 }
 
-testConnection();
+// Initialize connection
+(async () => {
+    try {
+        const connected = await testConnection();
+        if (!connected) {
+            console.error(`[${new Date().toISOString()}] [DB] Could not establish initial database connection.`);
+            process.exit(1);
+        }
+    } catch (err) {
+        console.error(`[${new Date().toISOString()}] [DB] Unexpected error during initialization:`, err);
+        process.exit(1);
+    }
+})();
 
 module.exports = { sequelize }; 
