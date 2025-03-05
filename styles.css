@@ -68,8 +68,8 @@ body {
 }
 
 .wallet-icon {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     margin-right: 8px;
     display: inline-flex;
     align-items: center;
@@ -77,40 +77,25 @@ body {
 }
 
 .connect-wallet {
-    background: linear-gradient(135deg, rgba(0, 255, 163, 0.2), rgba(3, 225, 255, 0.2));
-    border: 1px solid rgba(0, 255, 163, 0.3);
-    color: var(--surge-green);
-    padding: 16px;
-    border-radius: 20px;
+    background: transparent;
+    border: none;
+    padding: 8px;
     cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.connect-wallet:hover {
-    background: linear-gradient(135deg, rgba(0, 255, 163, 0.3), rgba(3, 225, 255, 0.3));
-    border-color: var(--surge-green);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 255, 163, 0.2);
 }
 
 .connect-wallet-btn {
-    background: linear-gradient(135deg, #4CAF50, #45a049);
-    color: white;
+    background: var(--surge-green);
     border: none;
-    padding: 16px 24px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease;
+    border-radius: 12px;
+    padding: 12px 16px;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 8px;
-    width: 100%;
-    margin-top: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .connect-wallet-btn:hover {
@@ -355,12 +340,12 @@ body {
     }
 
     .wallet-icon {
-        width: 42px !important;
-        height: 42px !important;
+        width: 64px;
+        height: 64px;
     }
     
     .connect-wallet {
-        padding: 12px;
+        padding: 10px;
     }
     
     .connect-wallet-btn {
@@ -377,12 +362,12 @@ body {
 
 @media (max-width: 360px) {
     .wallet-icon {
-        width: 36px !important;
-        height: 36px !important;
+        width: 72px;
+        height: 72px;
     }
 
     .connect-wallet {
-        padding: 10px;
+        padding: 12px;
     }
 
     .connect-wallet-btn .wallet-icon,
