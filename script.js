@@ -298,7 +298,7 @@ function verifyCaptcha() {
         
         // Set new boost duration
         const now = new Date().getTime();
-        const newEndTime = now + boostDuration; // Always 2 hours from now
+        const newEndTime = now + boostDuration; // 2 hours cooldown
         
         activateBoost(newEndTime);
         localStorage.setItem('boostEndTime', newEndTime.toString());
@@ -372,7 +372,7 @@ function updateCountdown(endTime) {
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-    countdownElement.textContent = `Solve again in: ${hours}h ${minutes}m ${seconds}s`;
+    countdownElement.textContent = `Next boost available in: ${hours}h ${minutes}m ${seconds}s`;
     return timeLeft;
 }
 
@@ -571,6 +571,7 @@ function calculateReturns() {
 // Deposit Functions
 function showDepositDialog() {
     if (!isWalletConnected()) {
+        window.lastAttemptedAction = 'deposit';
         showConnectWalletDialog();
         return;
     }
@@ -600,6 +601,7 @@ function confirmDeposit() {
 // Withdraw Functions
 function showWithdrawDialog() {
     if (!isWalletConnected()) {
+        window.lastAttemptedAction = 'withdraw';
         showConnectWalletDialog();
         return;
     }
@@ -767,14 +769,7 @@ function closeConnectWalletDialog() {
 }
 
 function connectWallet() {
-    // This will be replaced with actual wallet connection logic
-    window.walletConnected = true;
+    // Show coming soon message
+    alert('Wallet Features coming soon!');
     closeConnectWalletDialog();
-    // Show the original dialog that was attempted
-    const lastAttemptedAction = window.lastAttemptedAction;
-    if (lastAttemptedAction === 'deposit') {
-        showDepositDialog();
-    } else if (lastAttemptedAction === 'withdraw') {
-        showWithdrawDialog();
-    }
 } 

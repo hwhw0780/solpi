@@ -270,9 +270,11 @@ bot.onText(/\/help/, (msg) => {
         '/status - Check your mining status\n' +
         '/open - Open mining dashboard\n' +
         '/help - Show this help message\n\n' +
-        '💡 Tips:\n' +
+        '💡 Mining Tips:\n' +
+        '- Base Rate: 0.005 USDT per minute\n' +
+        '- Solve captchas to boost mining power by 0.025x\n' +
+        '- Boosts can be earned every 2 hours\n' +
         '- Keep this chat open to continue mining\n' +
-        '- Solve captchas on the dashboard to boost your mining power\n' +
         '- Track your earnings and withdraw USDT from the dashboard'
     );
 });
@@ -330,6 +332,9 @@ bot.onText(/\/start/, async (msg) => {
                 '🚀 Mining Started Successfully!\n\n' +
                 '💰 Base Rate: 0.005 USDT per minute\n' +
                 `⚡ Your Mining Power: ${activeMiningUsers.get(chatId).miningPower.toFixed(4)}x\n\n` +
+                '📈 Boost your earnings:\n' +
+                '- Solve captchas to increase mining power by 0.025x\n' +
+                '- Boosts available every 2 hours\n\n' +
                 '📱 Keep this chat open to continue mining\n' +
                 '💡 Use /open to access your mining dashboard\n' +
                 'Use /status to check your mining progress'
