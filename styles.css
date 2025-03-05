@@ -358,19 +358,35 @@ body {
 }
 
 @media (max-width: 360px) {
-    .wallet-icon {
-        width: 64px;
-        height: 64px;
+    .header {
+        padding: 12px;
+    }
+
+    .username {
+        font-size: 13px;
+        padding: 5px 10px;
     }
 
     .connect-wallet {
-        padding: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+    }
+
+    .wallet-icon {
+        width: 51px;
+        height: 51px;
     }
 
     .connect-wallet-btn .wallet-icon,
     .modal .wallet-icon {
-        width: 60px !important;
-        height: 60px !important;
+        width: 48px !important;
+        height: 48px !important;
+    }
+
+    .main-logo {
+        height: 40px;
     }
 }
 
@@ -983,8 +999,14 @@ body {
     }
 
     .wallet-icon {
-        width: 64px;
-        height: 64px;
+        width: 51px;
+        height: 51px;
+    }
+
+    .connect-wallet-btn .wallet-icon,
+    .modal .wallet-icon {
+        width: 48px !important;
+        height: 48px !important;
     }
 
     .main-logo {
