@@ -4,8 +4,8 @@ const MIN_STAKE_AMOUNT = 100000; // Minimum SOLPI required
 const RATE_MULTIPLIER = 0.01; // USDT addition per 10M SOLPI staked
 const POWER_INCREMENT = 0.05; // Mining power increase per captcha solve
 
-let totalMined = 0;
-let stakedAmount = 0;
+let totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
+let stakedAmount = parseInt(localStorage.getItem('stakedAmount')) || 0;
 let currentMiningRate = BASE_MINING_RATE;
 let currentCaptchaCode = '';
 let miningPower = parseFloat(localStorage.getItem('miningPower')) || 1.0;
@@ -106,6 +106,7 @@ let currentCaptchaType = '';
 const updateTotalMined = () => {
     const miningRate = BASE_MINING_RATE * miningPower;
     totalMined += miningRate;
+    localStorage.setItem('totalMined', totalMined.toString());
     document.getElementById('mining-rate').textContent = BASE_MINING_RATE.toFixed(3);
     document.getElementById('total-mined').textContent = totalMined.toFixed(3) + ' USDT';
 };
@@ -504,8 +505,14 @@ document.addEventListener('DOMContentLoaded', () => {
 // Mining update interval
 function updateMining() {
     totalMined += currentMiningRate * miningPower;
-    localStorage.setItem('totalMined', totalMined);
+    localStorage.setItem('totalMined', totalMined.toString());
     updateDisplays();
+    
+    // Sync with server every minute
+    const username = localStorage.getItem('telegramUsername');
+    if (username) {
+        syncWithServer(username);
+    }
 }
 
 // Update mining rate based on staked amount
@@ -599,18 +606,57 @@ function confirmWithdraw() {
     // Here you would typically interact with the wallet and smart contract
     // For now, we'll just update the UI
     totalMined -= amount;
-    localStorage.setItem('totalMined', totalMined);
+    localStorage.setItem('totalMined', totalMined.toString());
     updateDisplays();
     closeWithdrawDialog();
 }
 
-// Initialize mining data from localStorage
+// Function to sync with server
+async function syncWithServer(username) {
+    try {
+        const response = await fetch(`/api/user/${username}/mining`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                totalMined: totalMined
+            })
+        });
+        if (!response.ok) {
+            console.error('Error syncing with server');
+        }
+    } catch (error) {
+        console.error('Error syncing with server:', error);
+    }
+}
+
+// Function to load user data from server
+async function loadUserData(username) {
+    try {
+        const response = await fetch(`/api/user/${username}`);
+        if (response.ok) {
+            const userData = await response.json();
+            totalMined = parseFloat(userData.totalMined) || 0;
+            miningPower = parseFloat(userData.miningPower) || 1.0;
+            localStorage.setItem('totalMined', totalMined.toString());
+            localStorage.setItem('miningPower', miningPower.toString());
+            updateDisplays();
+        }
+    } catch (error) {
+        console.error('Error loading user data:', error);
+    }
+}
+
+// Initialize mining data
 function initializeMiningData() {
-    totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
-    stakedAmount = parseInt(localStorage.getItem('stakedAmount')) || 0;
-    miningPower = parseFloat(localStorage.getItem('miningPower')) || 1.0;
-    updateMiningRate();
-    updateDisplays();
+    const username = localStorage.getItem('telegramUsername');
+    if (username) {
+        loadUserData(username);
+    } else {
+        totalMined = parseFloat(localStorage.getItem('totalMined')) || 0;
+        updateDisplays();
+    }
 }
 
 // Event Listeners
