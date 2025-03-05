@@ -1088,9 +1088,46 @@ body {
 }
 
 .about-card p {
-    font-size: 16px;
+    color: #ccc;
     line-height: 1.6;
-    color: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+.buy-button-container {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.buy-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #00FFA3, #03E1FF);
+    color: #000;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.buy-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 163, 0.4);
+}
+
+.buy-button .button-icon {
+    margin-right: 8px;
+    font-size: 1.2em;
+}
+
+@media (max-width: 768px) {
+    .buy-button {
+        width: 100%;
+        margin-top: 1rem;
+    }
 }
 
 .features-grid {

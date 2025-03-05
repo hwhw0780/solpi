@@ -455,8 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize world map animation
     createWorldMapAnimation();
     
-    // Initialize mining power display
-    miningPowerElement.textContent = miningPower.toFixed(1) + 'x';
+    // Initialize mining power display with 4 decimal points
+    miningPowerElement.textContent = miningPower.toFixed(4) + 'x';
     
     // Initialize mining rate display with fixed base rate
     document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
@@ -520,7 +520,7 @@ function updateMining() {
     }
 }
 
-// Update mining rate based on staked amount
+// Update mining rate
 function updateMiningRate() {
     // Display base rate (always 0.005)
     document.getElementById('mining-rate').textContent = (0.005).toFixed(3);
